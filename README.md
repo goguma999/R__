@@ -22,7 +22,7 @@
 
 **9. 소리 데이터 시각화**: 📄 [노트](https://github.com/goguma999/R__/blob/main/9.%20%EC%86%8C%EB%A6%AC%20%EB%8D%B0%EC%9D%B4%ED%84%B0%20%EC%8B%9C%EA%B0%81%ED%99%94.txt)
 
-**10. 사회 연결망 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/10.%20%EC%82%AC%ED%9A%8C%20%EC%97%B0%EA%B2%B0%EB%A7%9D%20%EA%B7%B8%EB%9E%98%ED%94%84%20.txt)
+**10. 사회 연결망 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/10.%20%EC%82%AC%ED%9A%8C%20%EC%97%B0%EA%B2%B0%EB%A7%9D%20%EA%B7%B8%EB%9E%98%ED%94%84%20.md)
 
 
   
