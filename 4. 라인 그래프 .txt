@@ -1,0 +1,256 @@
+4. 라인 그래프 
+
+### ※ 라인 그래프가 유용한 경우 3가지 ?
+
+1. 시간에 따른 변화 추적을 확인할 때 매우 효과적인 그래프입니다. 
+2. 두 변수 간의 관계를 시각화 할 때 유용합니다.
+    
+    ex. 제품의 가격 변동과 판매량과의 관계
+    
+3. 경향성 분석을 할 때 유용합니다. 
+    
+    ex. 년도별로 출산율이 저하되는지 확인 
+    
+
+### 📍문법1. plotly로 라인 그래프로 시각화_강남역 시간대별 승차수
+
+[데이터](https://cafe.daum.net/oracleoracle/Soei/30)
+
+```r
+#예제1. 승차수 라인만 출력하시오
+
+# plotly 패키지 로드
+library(plotly)
+
+# 작업 디렉토리 설정
+setwd("c:\\data")
+
+# 데이터 로드
+data <- read.csv("line2.csv", header = TRUE, fileEncoding = "euc-kr")
+data
+
+# plotly를 사용한 라인 그래프 생성 (승차수 라인만 출력)
+fig <- plot_ly(data, x = ~time) %>%
+  add_trace(y = ~in_cnt, name = '승차', type = 'scatter', 
+  mode = 'lines+markers', line = list(color = 'blue'))
+									└ 동글뱅이
+
+# 그래프 출력
+fig
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/81feeb62-ef1d-4c5c-864a-5f7fa1d4dd73/Untitled.png)
+
+### 📍문법2. 위의 그래프에 하차수도 라인 그래프로 추가하시오 !
+
+```r
+#예제2. 하차수 라인만 출력하시오
+
+# plotly를 사용한 라인 그래프 생성 (승차수 라인만 출력)
+fig <- plot_ly(data, x = ~time) %>%
+  add_trace(y = ~in_cnt, name = '승차', type = 'scatter', 
+		  mode = 'lines+markers', line = list(color = 'blue')) %>% 
+  add_trace( y= ~out_cnt, name = '하차', type = 'scatter', 
+		  mode = 'lines+markers', line = list(color = 'red'))
+
+# 그래프 출력
+fig
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/8d6786da-9841-4a40-ab62-292cfd5323ea/Untitled.png)
+
+문제103. [한국 출산율 데이터](https://cafe.daum.net/oracleoracle/Soei/31)(korea_birth)를 데이터 프레임으로 생성하시오 ! 
+
+```r
+korea_birth<- read.csv('korea_birth.csv',header=T)
+head(korea_birth,5)
+*year = 년도, *birth_rate=출생률 
+```
+
+문제104. 위의 데이터를 이용해서 이해하기 좋도록 라인 그래프로 시각화 하시오 ! 
+
+```r
+fig<- plot_ly(korea_birth, x = ~k_year) %>%
+  add_trace(y= ~birth_rate, name = '출산율', type='scatter',
+            mode='lines+markers', 
+            line=list(color='blue'), marker=list(color='skyblue'))
+fig
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/8de9924d-255e-4292-92af-be7d78b75166/Untitled.png)
+
+```r
+fig<- fig %>% layout(title='1970-2023년까지의 한국의 출산율')
+fig
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/f24cff16-f3e7-4ad3-95c4-d6cbeef8222f/Untitled.png)
+
+문제105. [일본의 출산율 데이터](https://cafe.daum.net/oracleoracle/Sotv/188)를 가지고 csv 파일을 생성해서 데이터 프레임으로 생성하시오 ! 
+
+```r
+텍스트 -> 메모장 -> csv로 저장 
+
+japan_birth<- read.csv('japan_birth.csv',header=T)
+```
+
+문제106. 한국의 출산율 라인 그래프에 일본의 출산율 라인 그래프를 같이 출력하시오 ! 데이터 [여기](https://cafe.daum.net/oracleoracle/Soei/36)
+
+```r
+# plotly 패키지 로드
+library(plotly)
+
+# 작업 디렉토리 설정
+setwd("c:\\data")
+
+# 한국 출산율 데이터 로드
+korea_data <- read.csv("korea2.csv", header = TRUE, fileEncoding = "euc-kr")
+
+# 일본 출산율 데이터 로드
+japan_data <- read.csv("japan2.csv", header = TRUE)
+
+# 데이터 프레임을 합치기 위해 열 이름 통일
+colnames(korea_data) <- c("year", "birth_rate")
+colnames(japan_data) <- c("year", "birth_rate")
+
+**# 출처를 구분하기 위한 열 추가**
+korea_data$country <- "Korea"
+japan_data$country <- "Japan"
+
+**# 두 데이터를 합치기**
+combined_data <- rbind(korea_data, japan_data)
+
+# plotly를 사용한 라인 그래프 생성
+fig <- plot_ly(combined_data, **x = ~year,** **y = ~birth_rate**, 
+**color = ~country**, **colors** = c('blue', 'red'), type = 'scatter', mode = 'lines+markers')
+**└ 조건을 어떻게 쓰나 했는데 걍 color로 구분해버림(colors아님)** 
+
+# 그래프 출력
+fig
+
+-> color=~country를 사용하게 되면 국가별로 다른 색상을 사용합니다. 
+국가별로 라인 그래프가 그려지는데 colors = c('blue','red')를 지정해서 라인 색깔로
+국가를 구분합니다. 
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/ae16796d-d6f0-41d7-ad66-086deef69318/Untitled.png)
+
+📍문법107. [1~4호선승하차승객수_수정된 것](https://cafe.daum.net/oracleoracle/Soei/37) 데이터를 불러와서 데이터 프레임을 생성하시오 
+
+```r
+data<-read.csv('line14.csv',header=T)
+data
+```
+
+문제108. 1-4호선승하차승객수_수정된것(line14) 데이터를 가지고 라인 그래프로 시각화 하시오 ! 호선별로 4개의 그래프가 출력 되게 하면 됩니다. x축은 시간이고 y축은 승객수인데 승차수(in)만 가지고 라인그래프를 그리세요 ! 
+
+```r
+fig<- plot_ly(line14, x= ~time, y = ~in.,
+              **color = ~line_no**, 
+              colors = colors, type = 'scatter', mode = 'lines+markers') 
+
+fig
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/6d768b58-b719-4e61-a559-6858d7557916/Untitled.png)
+
+**문제109. 자동화 스크립트를 다시 사용하기 좋도록 수정한 코드로 반영하세요. [선생님 스크립트](https://cafe.daum.net/oracleoracle/Sotv/186)**
+
+```r
+# 필요한 패키지 로드
+library(svDialogs)
+library(plotly)
+
+# 옵션 메시지 정의
+options_list <- list("1: 막대 그래프 코드", "2: 원형 그래프 코드")
+
+# 사용자 입력 받기 (대화 상자 사용)
+dialog_result <- dlgList(options_list, title = "번호를 선택하세요")$res
+
+# switch 문을 사용해서 선택에 따라 다른 메세지 출력 및 실행
+if (is.null(dialog_result)) { #<--- 만약 결측치가 있다면
+  cat("유효하지 않은 선택입니다.\n")
+} else {
+  num <- as.integer(substr(dialog_result, 1, 1)) # 선택한 옵션의 첫 글자를 숫자로 변환
+  fig <- switch(as.character(num),
+         "1" = {
+           cat(readLines("bar_plot.R"), sep = "\n")
+           source("bar_plot.R", local = TRUE)
+           fig  # bar_plot.R에서 생성된 fig 객체 반환
+         },
+         "2" = {
+           cat(readLines("pie_plot.R"), sep = "\n")
+           source("pie_plot.R", local = TRUE)
+           fig  # pie_plot.R에서 생성된 fig 객체 반환
+         },
+         {
+           cat("유효하지 않은 선택입니다.\n")
+           NULL
+         }
+  )
+  if (!is.null(fig)) {
+    print(fig)  # fig 객체를 명시적으로 출력
+  }
+}
+```
+
+![클릭만 하면 됨. 그래프도 나옴; 이것이 테크. 미쳣다리 ~ ](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/f75d5b12-ff35-4848-9799-7e149ba23e19/Untitled.png)
+
+클릭만 하면 됨. 그래프도 나옴; 이것이 테크. 미쳣다리 ~ 
+
+문제110. 지하철 1~4호선 승차수를 라인 그래프로 출력하는데 아래의 코드를 line_plot.R이라는 이름으로 c드라이브 밑에 data 폴더 밑에 저장하세요 ~ 
+
+```r
+library(plotly)
+data<- read.csv('line14.csv',header=T)
+
+fig<- plot_ly(data, x= ~time, y = ~in.,
+              color = ~line_no, 
+              colors = colors, type = 'scatter', mode = 'lines+markers') 
+fig
+```
+
+문제111. ann.R에 3번 코드로 line_plot.R을 추가하시오 ! 
+
+```r
+# 필요한 패키지 로드
+library(svDialogs)
+library(plotly)
+
+# 옵션 메시지 정의
+options_list <- list("1: 막대 그래프 코드", "2: 원형 그래프 코드", **"3: 라인 그래프 코드"**)
+
+# 사용자 입력 받기 (대화 상자 사용)
+dialog_result <- dlgList(options_list, title = "번호를 선택하세요")$res
+
+# switch 문을 사용해서 선택에 따라 다른 메세지 출력 및 실행
+if (is.null(dialog_result)) {
+  cat("유효하지 않은 선택입니다.\n")
+} else {
+  num <- as.integer(substr(dialog_result, 1, 1)) # 선택한 옵션의 첫 글자를 숫자로 변환
+  fig <- switch(as.character(num),
+         "1" = {
+           cat(readLines("bar_plot.R"), sep = "\n")
+           source("bar_plot.R", local = TRUE)
+           fig  # bar_plot.R에서 생성된 fig 객체 반환
+         },
+         "2" = {
+           cat(readLines("pie_plot.R"), sep = "\n")
+           source("pie_plot.R", local = TRUE)
+           fig  # pie_plot.R에서 생성된 fig 객체 반환
+         },
+         **"3" = {
+           cat(readLines("line_plot.R"), sep = "\n")
+           source("line_plot.R", local = TRUE)
+           fig  # line_plot.R에서 생성된 fig 객체 반환
+         },**
+         {
+           cat("유효하지 않은 선택입니다.\n")
+           NULL
+         }
+  )
+  if (!is.null(fig)) {
+    print(fig)  # fig 객체를 명시적으로 출력
+  }
+}
+```

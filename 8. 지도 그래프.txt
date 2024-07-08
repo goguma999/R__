@@ -1,0 +1,311 @@
+8. 지도 그래프
+
+### ✅ 지도 그래프를 시각화 해야하는 이유 ?
+
+1. **공공 정책 및 행정**
+    
+    ex. 범죄 지도, 선거 결과 분석, 교통 관리, 도시 계획 등에서 지리적 데이터를 이용해서 정책 결정을 지원
+    
+    범죄 발생지도를 통해 경찰 순찰 경로를 최적화 하거나, 교통 혼잡 지역을 분석하여 교통 신호 체계를 개선할 수 있다. 
+    
+2. **건강과 질병** 
+    
+    질병 발생 지도, 전염병 확산 경로 분석을 통해 공중 보건 전략을 수립
+    
+3. **마케팅 및 소매업**
+    
+    고객분포 분석, 상권 분석, 지점 위치 등을 최적화 할 때 사용 
+    
+    ex. sk telecom에서 기지국 세울 때 적절한 곳에 기지국을 만들어야 할 때 활용  ( 지도 그래프, 비지도 학습의 k-means 머신러닝 ) 
+    
+4. **물류 및 공급망 관리**
+    
+    쿠팡의 경우 최적의 물류 경로 최적화, 창고 위치 선정, 배송 경로 조회 등을 통해 운영의 효율성을 높임 
+    
+
+### 📍문법1. R의 내장된 지도 함수를 이용하기
+
+▪️ 실습1. 시계지도를 출력하시오 !
+
+```r
+stall.packages("maps")
+install.packages("mapproj")
+
+library(maps)
+library(mapproj)
+
+map("world")
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/fc548240-3178-4915-96ea-7e625515089b/Untitled.png)
+
+▪️실습2. 중국지도만 확대해서 출력하시오 ! 
+
+```r
+map("world","china")
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/f0db634a-1b77-493e-bf16-c2dd1bdbcd25/Untitled.png)
+
+▪️실습3. 중국지도에서 특정 영역만 확대해서 보기(경도, 위도 범위 설정)
+
+```r
+map("world","china", xlim=c(80,135), ylim=c(15,55) )
+
+# 주요 도시 표시
+points(116.4074, 39.9042, col="red", pch=19) # 베이징 위치
+text(116.4074, 39.9042, "Beijing", pos=4, col="red")
+
+points(121.4737, 31.2304, col="blue", pch=19) # 상하이 위치
+text(121.4737, 31.2304, "Shanghai", pos=4, col="blue")
+
+# 중국 지도에 사용자 정의 색상 및 테마 적용
+map("world", "china", fill=TRUE, col="lightblue", bg="lightgray")
+
+드래그해서 한 번에 같이 해야함 
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/6771876f-d179-44ff-aca5-d1ecd103fddb/Untitled.png)
+
+▪️실습4. 한국지도를 시각화 하시오 
+
+```r
+# 한국 지도만 확대해서 출력
+map("world", "south korea")
+
+# 한국 지도에서 특정 영역만 확대해서 보기 (경도, 위도 범위 설정)
+map("world", "south korea", xlim=c(125, 131), ylim=c(33, 39))
+
+# 기본 한국 지도
+map("world", "south korea")
+
+# 주요 도시 표시
+points(126.9780, 37.5665, col="red", pch=19) # 서울 위치
+text(126.9780, 37.5665, "Seoul", pos=4, col="red")
+
+points(129.0756, 35.1796, col="blue", pch=19) # 부산 위치
+text(129.0756, 35.1796, "Busan", pos=4, col="blue")
+
+points(127.3845, 36.3504, col="green", pch=19) # 대전 위치
+text(127.3845, 36.3504, "Daejeon", pos=4, col="green")
+
+points(126.7052, 37.4563, col="purple", pch=19) # 인천 위치
+text(126.7052, 37.4563, "Incheon", pos=4, col="purple")
+
+points(128.6014, 35.8714, col="orange", pch=19) # 대구 위치
+text(128.6014, 35.8714, "Daegu", pos=4, col="orange")
+
+# 한국 지도에 사용자 정의 색상 및 테마 적용
+map("world", "south korea", fill=TRUE, col="lightblue", bg="lightgray")
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/7cbe0610-e6aa-456e-ac77-9c5c368670ea/Untitled.png)
+
+### 📍문법2. 구글 지도의 우리나라 서울 지도를 시각화 하시오
+
+```r
+# 필요한 패키지 설치
+install.packages("ggplot2")
+install.packages("ggmap") # 구글 지도 데이터를 시각화 하기 위한 패키지
+													#	구글 api 이용해야 사용 가능 
+
+# 패키지 로드
+library(ggplot2)
+library(ggmap)
+
+# 구글 API 키 등록
+register_google(key = "구글 지도 API 키")
+# maps static api도 활성화 필요 ! 
+
+# 데이터 로드 (서울 지하철 2호선 위경도 정보 파일 경로를 정확히 지정)
+# 2호선 역의 위도와 경도 정보를 가지고 동그라미 표시를 위해 
+loc <- read.csv("서울지하철2호선위경도정보.csv", header = TRUE,  fileEncoding ="euc-kr" )
+
+# 중심점 계산
+center <- c(mean(loc$LON), mean(loc$LAT))
+
+# 구글 지도 가져오기
+kor <- get_map(location = center, zoom = 11, maptype = "roadmap")
+ggmap(kor)
+
+# 지도 시각화
+kor.map <- ggmap(kor) + 
+  geom_point(data = loc, aes(x = LON, y = LAT), size = 3, alpha = 0.7) +
+  geom_text(data = loc, aes(x = LON, y = LAT + 0.005, label = 역명), size = 3)
+#alpha : 투명도 
+
+# 지도 출력
+print(kor.map)
+```
+
+### 📍문법3. 구글 서울 지도에 2호선 라인을 표시하세요
+
+```r
+# 필요한 패키지 설치
+install.packages("ggplot2")
+install.packages("ggmap") # 구글 지도 데이터를 시각화 하기 위한 패키지
+													#	구글 api 이용해야 사용 가능 
+
+# 패키지 로드
+library(ggplot2)
+library(ggmap)
+
+# 구글 API 키 등록
+register_google(key = "구글 지도 API 키")
+# maps static api도 활성화 필요 ! 
+
+# 데이터 로드 (서울 지하철 2호선 위경도 정보 파일 경로를 정확히 지정)
+# 2호선 역의 위도와 경도 정보를 가지고 동그라미 표시를 위해 
+loc <- read.csv("서울지하철2호선위경도정보.csv", header = TRUE,  fileEncoding ="euc-kr" )
+
+# 중심점 계산
+center <- c(mean(loc$LON), mean(loc$LAT))
+
+# 구글 지도 가져오기
+kor <- get_map(location = center, zoom = 11, maptype = "roadmap")
+ggmap(kor)
+
+# 지도 시각화
+kor.map <- ggmap(kor) + 
+  geom_point(data = loc, aes(x = LON, y = LAT), size = 3, alpha = 0.7) +
+  geom_text(data = loc, aes(x = LON, y = LAT + 0.005, label = 역명), size = 3)
+#alpha : 투명도 
+
+# 지도 출력
+print(kor.map)
+```
+
+▪️문제135. 역의 점의 색깔은 변경하세요 ! 
+
+```r
+# 지도 시각화
+kor.map <- ggmap(kor) + 
+  geom_point(data = loc, aes(x = LON, y = LAT), size = 3, alpha = 0.7, **col="red"**) +
+  geom_text(data = loc, aes(x = LON, y = LAT + 0.005, label = 역명), size = 3)
+```
+
+▪️문제136. 역이름 텍스트를 좀 기울여서 출력하시오 ! 
+
+```r
+# 지도 시각화
+kor.map <- ggmap(kor) + 
+  geom_point(data = loc, aes(x = LON, y = LAT), size = 3, alpha = 0.7, col="red") +
+  geom_text(data = loc, aes(x = LON, y = LAT + 0.005, label = 역명), size = 3, **angle=45**)
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/5f8860d8-17e5-4496-bfec-9355a0d034a5/Untitled.png)
+
+▪️문제137. 지하철 3호선 라인을 시각화 하시오 ! 
+
+```r
+# 필요한 패키지 설치
+install.packages("ggplot2")
+install.packages("ggmap") # 구글 지도 데이터를 시각화 하기 위한 패키지
+#	구글 api 이용해야 사용 가능 
+
+# 패키지 로드
+library(ggplot2)
+library(ggmap)
+
+# 구글 API 키 등록
+register_google(key = "AIzaSyDerdchu9tK5etQ03pX4xdTNnr33XwuhG0")
+# maps static api도 활성화 필요 ! 
+
+# 데이터 로드 (서울 지하철 2호선 위경도 정보 파일 경로를 정확히 지정)
+# 23호선 역의 위도와 경도 정보를 가지고 동그라미 표시를 위해 
+loc <- read.csv("서울지하철3호선역위경도정보.csv", header = TRUE,  fileEncoding ="euc-kr" )
+
+# 중심점 계산
+center <- c(mean(loc$LON), mean(loc$LAT))
+
+# 구글 지도 가져오기
+kor <- get_map(location = center, zoom = 11, maptype = "roadmap")
+ggmap(kor)
+
+# 지도 시각화
+kor.map <- ggmap(kor) + 
+  geom_point(data = loc, aes(x = LON, y = LAT), size = 3, alpha = 0.7, col="tomato") +
+  ~~geom_text(data = loc, aes(x = LON, y = LAT + 0.005, label = 역명), size = 3, angle=30)
+#~~geop_text 빼면 역이름 빠짐
+~~~~#alpha : 투명도 
+
+# 지도 출력
+print(kor.map)
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/9b5a7e0f-4c45-42ca-9ef0-33def6dbcac2/Untitled.png)
+
+▪️문제138. 2조 포트폴리오인 서울시 초등학교 통폐합 관련해서 서울시 초등학교의 위치를 빨간색 점으로 표시하시오 ! [데이터](https://cafe.daum.net/oracleoracle/Sotv/263)
+
+- 코드
+    
+    ```r
+    # 필요한 패키지 설치
+    install.packages("ggplot2")
+    install.packages("ggmap")
+    
+    # 패키지 로드
+    library(ggplot2)
+    library(ggmap)
+    
+    # 구글 API 키 등록
+    register_google(key = "  구글 api 키")
+    
+    # 데이터 로드 (학교 위경도 정보 파일 경로를 정확히 지정)
+    school <- read.csv("school.csv", header = TRUE, fileEncoding = "euc-kr")
+    
+    # 중심점 계산
+    center <- c(mean(school$LON), mean(school$LAT))
+    
+    # 구글 지도 가져오기
+    kor <- get_map(location = center, zoom = 11, maptype = "roadmap")
+    
+    # 지도 시각화
+    kor.map <- ggmap(kor) + 
+      geom_point(data = school, aes(x = LON, y = LAT), size = 4, shape = 21, fill = "red", color = "black", alpha = 0.7)
+    
+    # 지도 출력
+    print(kor.map)
+    ```
+    
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/8aebc0be-2399-42a9-aa32-f7d8593e6e28/Untitled.png)
+
+▪️문제138. 여러분들이 사는 동네의 지도를 구글 지도로 시각화 하시오 ! 
+
+- 코드
+    
+    ```r
+    # 필요한 패키지 설치
+    install.packages("ggplot2")
+    install.packages("ggmap")
+    
+    # 패키지 로드
+    library(ggplot2)
+    library(ggmap)
+    
+    # 구글 API 키 등록
+    register_google(key = "  구글 api 키")
+    
+    # 데이터 로드 (학교 위경도 정보 파일 경로를 정확히 지정)
+    school <- read.csv("school.csv", header = TRUE, fileEncoding = "euc-kr")
+    
+    # 중심점 계산
+    center <- c(mean(school$LON), mean(school$LAT))
+    
+    # 구글 지도 가져오기
+    kor <- get_map(location = center, zoom = 16, maptype = "roadmap")
+    
+    # 지도 시각화
+    kor.map <- ggmap(kor) 
+    
+    # 지도 출력
+    print(kor.map)
+    ```
+    
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/637c6b2c-b0ce-41c8-b426-a660c9359ca6/Untitled.png)
+
+*미국에서 성공한 빅데이터 분석 사례처럼 
+
+도시에 구역별로 어떤 범죄가 발생하는지 원으로 시각화해서 보여주는 데이터 분석을 하면 우리나라 범죄 예방에도 많은 도움이 될 것 같습니다.

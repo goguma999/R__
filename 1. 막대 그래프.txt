@@ -1,0 +1,149 @@
+1. 막대 그래프
+### 📍문법1. R에 내장된 함수를 이용해서 막대 그래프를 그리시오 !
+
+```r
+emp5 <- emp[ order(emp$sal, decreasing=TRUE),c('ename','sal')]
+emp5 <-head(emp5,5)
+emp5
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/fc7b8e4b-227f-4c0c-8938-7908e543cb30/Untitled.png)
+
+```r
+barplot(emp$sal,
+        main = 'Salary Bar Char',
+        names.arg=emp$ename,
+        ylab='Salary',
+        col='blue')
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/2e0cad10-fd83-4560-97ef-05dc1f3939c5/Untitled.png)
+
+```r
+barplot(emp$sal,
+        main = 'Salary Bar Char',
+        names.arg=emp$ename,
+        ylab='Salary',
+        col='gold',
+        horiz=TRUE)
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/344614f9-3f12-498e-ad55-ae7d4da4278e/Untitled.png)
+
+### 📍문법2. plotly를 이용해서 막대 그래프를 그리시오
+
+```r
+install.packages('plotly')
+library(plotly)
+
+setwd('c:\\data')
+emp<-read.csv('emp.csv',header=T)
+```
+
+```r
+#직업별 인원수 계산
+job_counts<-table(emp$job)
+
+#**RC**olor**B**rewer 팔레트 중에서 5가지 색상 선택
+install.packages("RColorBrewer")
+library(RColorBrewer)
+colors<-brewer.pal(5,'Set3')
+
+#plotly를 사용한 막대 그래프 생성
+fig<-plot_ly(x=names(job_counts),y=as.numeric(job_counts),type='bar',
+							marker=list(color=colors))
+
+#그래프 출력
+fig
+```
+
+![그래프에 커서 갖다대면 몇명인지 표시도 됨](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/bd662cc1-def1-4819-b75a-f4441a2857ef/Untitled.png)
+
+그래프에 커서 갖다대면 몇명인지 표시도 됨
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/95b18d48-3745-4d18-acf4-3ce94c7d8230/Untitled.png)
+
+문제94. 부서번호와 부서번호별 인원수를 가지고 plotly로 막대 그래프를 그리시오 ! 
+
+```r
+deptno_cnt<-table(emp$deptno)
+
+deptno_cnt
+
+colors<-brewer.pal(5,'Set2')
+
+fig<-plot_ly(x=names(deptno_cnt),y=as.numeric(deptno_cnt),type='bar', 
+marker=list(color=colors))
+
+fig  
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/ddfaf283-8852-4cae-8673-51a288254cd3/Untitled.png)
+
+문제95. R 머신러닝 책 1장에 나오는 중고차 데이터(usedcars.csv)를 이용해서 모델별로 막대 그래프를 plotly로 그리시오 !
+
+```r
+#1. 데이터 불러오기
+usedcars<-read.csv('usedcars.csv',header=T)
+usedcars
+```
+
+```r
+#2. 건수 불러오기
+car_counts <- table
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/474b8e2a-fb90-406b-a548-13b3c9a643ae/Untitled.png)
+
+```r
+#3. 색깔 지정하기 
+colors <- c('gold','skyblue','tomato','lightgreen','purple')
+```
+
+```r
+#4. plotly를 사용한 막대 그래프 생성하기 
+fig <- plot_ly( x = names(car_counts),
+								y = as.numeric(car_counts),
+								type='bar',
+								marker=list(color=colors) ) 
+```
+
+```r
+#5. 그래프 출력
+fig 
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/c87567c1-6e69-420e-bc74-0782bd9564a0/Untitled.png)
+
+[📍문법5. 위의 출력된 결과로 막대 그래프를 그리시오 ! ](https://www.notion.so/5-68a968a400b84644b5016dadcaf6f28a?pvs=21) 
+
+[오늘의 마지막 문제] 
+
+SQL 포트폴리오 데이터 중에 하나로 plotly로 막대 그래프로 시각화 하시오 ! 
+
+Q1. 건물용도 현황을 막대그래프로 시각화해보자.
+
+```r
+type_cnt <- table(house$건물용도)
+type_cnt
+
+fig<- plot_ly( x= names(type_cnt),
+                y= as.numeric(type_cnt),
+                type='bar',
+                marker=list(color=colors) )
+fig
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/cd815697-b031-49cf-84d9-82ad4e338752/Untitled.png)
+
+Q2. 자치구별 평균 물건금액을 시각화해보자. 
+
+```r
+mean<-tapply(house$물건금액, house$자치구명, mean)
+
+fig<-plot_ly(x=names(mean),y=as.numerdic(mean),type='bar',
+             marker=list(color=('tomato'))
+fig
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/bfa5e4bb-a1c2-4098-bb30-cad39000fa62/Untitled.png)

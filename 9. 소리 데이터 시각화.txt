@@ -1,0 +1,322 @@
+9. 소리 데이터 시각화
+
+
+### ✅ 소리 데이터 분석이 활용되는 분야
+
+1. 건강 및 의료
+    
+    심장소리, 폐 소리등의 분석을 통해 심장병, 폐질환을 진단하는데 사용됩니다. 
+    
+2. 보안 및 감시
+    
+    보안 시스템에서 특정 소리(유리가 깨지는 소리)를 감지하여 침입을 탐지
+    
+3. 음성 및 음악 처리
+    
+    - 음악 스트리밍 서비스에서 사용자의 취향을 분석하여 맞춤형 음악을 제작하거나 추천하는데 활용 
+    
+    - 펫펄스랩. 반려견과 교감을 나눌 수 있는 디바이스를 만드는데 활용
+    
+    ※ 동물 소리 분석 포트폴리오:  https://cafe.daum.net/oracleoracle/Sotv/264
+    
+
+### 📍문법1. R로 음악소리를 플레이를 하고 시각화 하시오 !
+
+```r
+install.packages("tuneR")
+library(tuneR)
+
+setwd("c:\\data")
+audio<- readWave("sohot_trimmed.wav")
+
+head(audio@left, 1000)
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/96c31dc8-63c7-4a35-bebc-d273c825363d/Untitled.png)
+
+```r
+audio_length<-length(audio@left)
+a<- audio_length/2 -500
+b<- audio_length/2 + 499
+
+m_data<- audio@left[ a:b ]
+
+c<- head(m_data, 100) 
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/0065cf4d-3687-4366-8ecd-1df574079e04/Untitled.png)
+
+```r
+plot(c)
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/3a4b3687-1982-440f-a2df-17e0892a3281/Untitled.png)
+
+### 📍문법2. 정상적인 심장박동 소리와 질환이 있는 심장박동 소리를 각각 시각화 하시오 !
+
+```r
+audio1<- readWave("normal.wav")
+audio2<- readWave("ps.wav")
+audio3<- readWave("mr.wav")
+audio4<- readWave("ar.wav")
+
+play(audio1)
+play(audio2)
+play(audio3)
+play(audio4)
+
+┌
+graphics.off()     # 그래프를 화면에서 지우기 
+par(mfrow=c(2,2), new=T)  # 2행 2열로 그래프를 그려라 
+par(mar=c(1,1,1,1))  # 여백의 길이를 지정 (좌우상하) 
+plot(audio1)
+plot(audio2)
+plot(audio3)
+plot(audio4)
+┘ 한 번에 드래그해서 출력해야함 
+```
+
+![이런 데이터들을 다 딥러닝 학습시키게 되면 ! 휴먼 에러를 예방할 수 있음](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/a543fe86-a906-4fb1-9181-197f5e7fac38/Untitled.png)
+
+이런 데이터들을 다 딥러닝 학습시키게 되면 ! 휴먼 에러를 예방할 수 있음
+
+그래프만 봐도 정상 심장소리와 질병 심장소리가 구분이 된다. 
+
+이런 심장 소리 데이터를 기계학습 시키면 수십년 경력의 의료진도 놓칠 수 있는 부분을 찾아내는 코드를 만들어 낼 수 있다.
+
+코드는 찾아내기 쉽다. 숫자로 변환하는게 중요
+
+소리
+
+이미지 —> 전처리(요 코드가 , 요게 중요. 이것을 잘 짜야) ——> 신경망 (유명한 코드들 많음) 
+
+텍스트 
+
+문서    컴퓨터의 여러 문서들 중에 랜섬웨어 같은 악성 코드가 있는지 알아내는 프로그램개발 —>   그 문서들을 숫자로 변환하는 전처리 기술이 더 중요 —> 머신러닝(knn) (딥러닝 쓰고 하면 됨
+
+### 📍문법3. 소리 데이터를 전처리하는 방법
+
+```r
+이미지 --> cv2.imread ----> 숫자 ----> 머신러닝 알고리즘
+소리 ----> librosa  ------> 숫자 ----> 머신러닝 알고리즘
+```
+
+소리를 단순히 숫자로 변환만 하면 되는 것이 아니라, 다음의 작업을 꼭 해줘야 함. 
+
+[참고자료](https://cafe.daum.net/oracleoracle/Sotv/264)
+
+햇빛을 프리즘에 통과시키면 일곱 색깔 무지개로 나누어지는 것처럼 소리도 푸리에의 변환을 통해서 주파수 순으로 펼쳐 놓을 수 있음. 이를 주파수 스펙트럼이라고 함 
+
+### 📍문법4. 소리를 주파수 스펙트럼 프리즘에 넣어서 주파수 스펙트럼 만들기
+
+```r
+소리 —> 숫자 (소리 증폭) —> 주파수 스펙트럼 프리즘 —> 주파수 스펙트럼 
+```
+
+**✅ (가)주제: 뉴진스와 아이브 노래 분류하는 기계 만들기**
+
+```r
+#1. mp3를 wav로 변환
+#2. wav 파일을 자르는 작업 
+#3. wav를 주파수 스펙트럼으로 변환
+#4. 변환한 숫자를 기계학습 시킵니다. <- # 하이퍼 파라미터를 조정해서 정확도 좋은
+																			# 기계를 생성
+```
+
+▪️실습1. mp3 파일을 wav로 변환하기 
+
+```r
+-- 공유폴더 \\192.168.19.14
+
+# MP3 파일을 WAV 파일로 변환
+install.packages("tuneR")
+install.packages("av")
+
+library(tuneR)
+library(av)
+
+# 파일 경로 설정
+mp3_file <- "c:\\data\\afterlike.mp3"
+wav_file <- "c:\\data\\afterlike.wav"
+
+# MP3 파일을 WAV 파일로 변환
+av_audio_convert(mp3_file, wav_file)
+
+# 변환된 파일을 확인
+if (file.exists(wav_file)) {
+  cat("변환이 성공적으로 완료되었습니다:", wav_file, "\n")
+} else {
+  cat("변환에 실패했습니다.\n")
+}
+```
+
+▪️실습2. wav 파일을 크기를 작게 잘라냄 
+
+```r
+# 1. 앞부분만 잘라내기
+# 필요한 패키지 설치 및 로드
+install.packages("tuneR")
+library(tuneR)
+
+# 음성 파일을 읽어옴
+file_path <- "afterlike.wav"
+sample_wave <- readWave(file_path)
+
+# 음성 신호와 샘플링 속도 추출
+audio_samples <- sample_wave@left
+sample_rate <- sample_wave@samp.rate
+
+# 1분(60초)에 해당하는 샘플 수 계산
+duration_sec <- 60  # 1분 = 60초
+num_samples <- duration_sec * sample_rate
+
+# 앞부분 1분의 음원만 잘라내기
+if (num_samples > length(audio_samples)) {
+  stop("The file is shorter than 1 minute.")
+}
+trimmed_samples <- audio_samples[1:num_samples]
+
+# 새로운 Wave 객체 생성
+trimmed_wave <- Wave(left = trimmed_samples, samp.rate = sample_rate, bit = sample_wave@bit)
+
+# 새로운 파일로 저장
+writeWave(trimmed_wave, "afterlike_trimmed.wav")
+
+# 결과 확인
+cat("The first 1 minute of the audio has been trimmed and saved as 'afterlike_trimmed.wav'\n")
+```
+
+▪️실습3. 주파수 스펙트럼으로 시각화 하기 
+
+```r
+# 필요한 패키지 설치 및 로드
+install.packages("tuneR")
+install.packages("seewave")
+
+library(tuneR)
+library(seewave)
+
+# 음성 파일을 읽어옴
+sample_wave <- readWave("afterlike_trimmed.wav")
+
+# 음성 신호와 샘플링 속도 추출
+audio_samples <- sample_wave@left
+sample_rate <- sample_wave@samp.rate
+
+# 주파수 스펙트럼 계산 및 시각화
+par(mfrow = c(1, 1))  # 그래프를 1x1 배치로 설정
+spectro(audio_samples,fastdisp=TRUE, f = sample_rate, ovlp = 50, collevels = seq(-40, 0, 1))
+
+#audio_samples <- 분석할 소리
+#fastdisp <- 빠른 디스플레이 모드를 사용. 그래프를 더 빠르게 랜더링 하겠다.
+#f=sample_rate <- 샘플링 주파수를 설정합니다.
+#ovlp = 50 <- 오버랩을 50% 겹치게 해서 스펙트럼의 시간 해상도를 높이게 해줌
+#collevels = seq(-40, 0, 1) 
+#└색상 지정하기 -40db ~ 0db까지 1db 간격으로 색상 레벨을 지정 하겠다. 
+
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/6b33fdc0-9d23-4f6c-ad57-8ca4c40b460e/Untitled.png)
+
+그래프 설명: 
+
+1. 가로축: 시간 0~ 60초 
+2. 세로축: 주파수 ( 0 khz ~ 20khz) 
+3. 색상 : 신호의 진폭. 오른쪽에 있는 것-색상 눈금, 빨간색이 가장 높은 진폭 ,
+    
+    파란 색이 가장 낮은 진폭, 중간 색상이 중간 진폭 
+    
+
+▪️문제140. 클래식 음악을 주파수 스펙트럼으로 그리시오 ! 
+
+- 코드
+    
+    ```r
+    # MP3 파일을 WAV 파일로 변환
+    install.packages("tuneR")
+    install.packages("av")
+    
+    library(tuneR)
+    library(av)
+    
+    # 파일 경로 설정
+    mp3_file <- "c:\\data\\morning.mp3"
+    wav_file <- "c:\\data\\morning.wav"
+    
+    # MP3 파일을 WAV 파일로 변환
+    av_audio_convert(mp3_file, wav_file)
+    
+    # 변환된 파일을 확인
+    if (file.exists(wav_file)) {
+      cat("변환이 성공적으로 완료되었습니다:", wav_file, "\n")
+    } else {
+      cat("변환에 실패했습니다.\n")
+    }
+    ```
+    
+    ```r
+    # 1. 앞부분만 잘라내기
+    # 필요한 패키지 설치 및 로드
+    install.packages("tuneR")
+    library(tuneR)
+    
+    # 음성 파일을 읽어옴
+    file_path <- "morning.wav"
+    sample_wave <- readWave(file_path)
+    
+    # 음성 신호와 샘플링 속도 추출
+    audio_samples <- sample_wave@left
+    sample_rate <- sample_wave@samp.rate
+    
+    # 1분(60초)에 해당하는 샘플 수 계산
+    duration_sec <- 60  # 1분 = 60초
+    num_samples <- duration_sec * sample_rate
+    
+    # 앞부분 1분의 음원만 잘라내기
+    if (num_samples > length(audio_samples)) {
+      stop("The file is shorter than 1 minute.")
+    }
+    trimmed_samples <- audio_samples[1:num_samples]
+    
+    # 새로운 Wave 객체 생성
+    trimmed_wave <- Wave(left = trimmed_samples, samp.rate = sample_rate, bit = sample_wave@bit)
+    
+    # 새로운 파일로 저장
+    writeWave(trimmed_wave, "afterlike_trimmed.wav")
+    
+    # 결과 확인
+    cat("The first 1 minute of the audio has been trimmed and saved as 'afterlike_trimmed.wav'\n")
+    ```
+    
+    ```r
+    # 필요한 패키지 설치 및 로드
+    install.packages("tuneR")
+    install.packages("seewave")
+    
+    library(tuneR)
+    library(seewave)
+    
+    # 음성 파일을 읽어옴
+    sample_wave <- readWave("afterlike_trimmed.wav")
+    
+    # 음성 신호와 샘플링 속도 추출
+    audio_samples <- sample_wave@left
+    sample_rate <- sample_wave@samp.rate
+    
+    # 주파수 스펙트럼 계산 및 시각화
+    par(mfrow = c(1, 1))  # 그래프를 1x1 배치로 설정
+    spectro(audio_samples,fastdisp=TRUE, f = sample_rate, ovlp = 50, collevels = seq(-40, 0, 1))
+    
+    #audio_samples <- 분석할 소리
+    #fastdisp <- 빠른 디스플레이 모드를 사용. 그래프를 더 빠르게 랜더링 하겠다.
+    #f=sample_rate <- 샘플링 주파수를 설정합니다.
+    #ovlp = 50 <- 오버랩을 50% 겹치게 해서 스펙트럼의 시간 해상도를 높이게 해줌
+    #collevels = seq(-40, 0, 1) 
+    #└색상 지정하기 -40db ~ 0db까지 1db 간격으로 색상 레벨을 지정 하겠다. 
+    
+    ```
+    
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/a662ffd6-51d5-4b60-9500-242063bba5b0/Untitled.png)
+
+[오늘의 문제] 오늘 배운 내용으로 시각화 하고 싶은 주제를 자유롭게 시각화 하시오 !

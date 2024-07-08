@@ -1,0 +1,1216 @@
+7. 워드 클라우드 그래프 
+
+
+> 텍스트 데이터 탐색 및 요약 그리고 주요 단어 강조 등을 시각화 하고 싶을 때 사용하는 그래프
+
+트렌드를 분석하거나 소셜 미디어와 뉴스에서 언급하는 주요 내용들을 분석할 때 유용한 그래프
+
+마케팅에서 고객 만족도 등을 조사할 때 많이 사용
+
+문서나 문학 작품을 분석하고자 할 때 유용한 그프
+> 
+
+### ※  Rjava 설치하기
+
+```r
+1. 아래에서 java 64비트를 다운로드 받는다
+https://www.java.com/en/download/manual.jsp
+
+2. Windows Offline (64-bit) 으로 설치
+
+3. 아래와 같이 환경설정을 한다.
+(R스튜디오) Sys.setenv(JAVA_HOME='C:\\Program Files\\Java\\jre1.8.0')(c드라이브자바위치)
+※ 설명 : R 에서 지금 자바홈 위치가 어디있다는 것을 알려주는 것
+
+4. 설치를 한다
+install.packages("rJava")
+
+library(rJava)
+```
+
+### 📍문법2. 한글을 R이 인식할 수 있도록 KoNLP 패키지를 설치합니다.
+
+```r
+# 필요한 라이브러리 로드(개인 깃허브에서 다운로드 받습니다.) 
+install.packages("remotes")
+library(remotes)
+remotes::install_github("haven-jeon/KoNLP")
+
+library(KoNLP)
+library(dplyr)
+
+# 사전 설정
+useNIADic() 
+
+# 텍스트 데이터 로드
+# 마지막 줄에 엔터 2번 해야함
+winter <- readLines('winter.txt', encoding = 'UTF-8')
+
+#불필요한 텍스트 제거 
+# UTF-8은 한글이나 중국어등을 지원하는 문자셋이고, 
+# ASCII는 영어를 지원하는 문자셋입니다. 
+# UTF-8을 ASCII로 변환하면서 변환되지 않는 문자를 ""(null)로 바꾸겠다. 
+winter <- iconv(winter, "UTF-8", "ASCII", sub="")
+
+# 특수문자 제거( gsub(변경전 문자, 변경후문자, 컬럼) )
+# ^는 'not'의 의미. 일반문자나 숫자가 아니면 제거해라. 
+cleaned_winter <- gsub("[^[:alnum:][:space:]]", "", winter)
+
+# 명사 추출
+          ┌KoNLP에 내장된 함수
+nouns <- extractNoun(cleaned_winter)
+
+# 추출된 명사 확인
+print(nouns)
+```
+
+![이렇게 나오면 안 된다는 . . KoNLP에서 코드 수정이 필요하다는. . ](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/9a0b9b1b-e80a-485c-8e6e-bb3da7cb7db2/Untitled.png)
+
+이렇게 나오면 안 된다는 . . KoNLP에서 코드 수정이 필요하다는. . 
+
+### 📍문법3. 영화 겨울왕국 대본을 워드 클라우드로 그리시오
+
+데이터 게시판에서 겨울왕국 대본(winter.txt)를 data폴더에 가져다 둡니다. 
+
+```r
+# 필요한 라이브러리 로드
+install.packages("KoNLP", dependencies = TRUE)
+install.packages("wordcloud")
+install.packages("RColorBrewer")
+
+library(KoNLP)
+library(wordcloud)
+library(RColorBrewer)
+
+# 사전 설정
+useNIADic()
+
+# 텍스트 데이터 로드
+file_path <- "winter.txt"
+winter <- readLines("winter.txt", encoding = "UTF-8")
+
+#iconv 함수는 텍스트 데이터의 인코딩을 변환하는 데 사용됩니다. 
+#이 함수는 특정 인코딩 형식에서 다른 인코딩 형식으로 문자열을 변환할 수 있습니다. 
+#이를 통해 텍스트 데이터에서 비정상적인 문자나 인코딩 문제를 해결할 수 있습니다.
+
+winter <- iconv(winter, "UTF-8", "ASCII", sub="")
+
+# 특수문자 제거
+cleaned_winter <- gsub("[^[:alnum:][:space:]]", "", winter)
+
+# 명사 추출
+nouns <- extractNoun(cleaned_winter)
+	└list 형
+
+# 명사 벡터를 하나의 벡터로 변환
+nouns_vector <- unlist(nouns)
+
+# 명사 빈도 계산
+nouns_freq <- table(nouns_vector)
+
+# 데이터 프레임으로 변환
+nouns_df <- as.data.frame(nouns_freq, stringsAsFactors = FALSE)
+nouns_df 
+
+names(nouns_df) <- c("word", "freq")
+
+# 워드 클라우드 생성
+wordcloud(words = nouns_df$word, # 워드 클라우드에 포함될 단어
+          freq = nouns_df$freq,  # 단어의 빈도수
+          min.freq = 2,          # 최소 빈도수. 이 값보다 큰 단어들만 시각화 
+          scale = c(4, 0.5),     # 워드 클라우드의 단어의 글씨 크기 범위 
+          colors = brewer.pal(8, "Dark2")) # 색깔
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/d94c3db5-e305-4a1d-b493-bd1fb5132b9d/Untitled.png)
+
+### 📍문법4. EBS 방송국의 인기 만화인 레이디 버그 게시판의 게시글을 워드 클라우드로 그리시오 ! (한글 데이터)
+
+데이터는 [여기](https://cafe.daum.net/oracleoracle/Soei/41)
+
+파이썬 웹스크롤링으로 스크롤 함.
+
+```r
+# 배운 사람들이 쓰는 세련된 워드클라우드 
+install.packages("wordcloud2")
+
+# 라이브러리 로드
+library(wordcloud2)
+library(RColorBrewer)
+library(plyr)
+library(data.table)
+
+# 작업 디렉토리 설정
+setwd("c:\\data")  # 파일이 있는 디렉토리로 변경
+
+# 텍스트 데이터 로드
+txt <- readLines('ladybug5.txt', encoding = "UTF-8")
+
+# 특수문자 제거 및 공백 처리
+# 불필요한 텍스트를 제거합니다. |n요런거. 
+cleaned_txt <- iconv(txt, "UTF-8", "UTF-8", sub="")
+
+# 한글과 숫자, 공백을 제외한 모든 특수문자를 공백으로 대체합니다. 
+cleaned_txt <- gsub("[^[:alnum:][:space:]ㄱ-ㅎㅏ-ㅣ가-힣]", " ", cleaned_txt)
+
+# 연속된 공백을 하나의 공백으로 변환합니다. 
+cleaned_txt <- gsub("\\s+", " ", cleaned_txt)  # 연속된 공백 제거
+
+# 명사 추출 함수 ( 선생님이 만들어주신 함수. KoNLP에 의존하지 않아도 GPT와 함께라면. ) 
+extract_nouns_simple <- function(doc) {
+  doc <- as.character(doc) # 문자로 변환
+  words <- unlist(strsplit(doc, "\\s+"))  # 공백을 기준으로 단어 분리
+  nouns <- Filter(function(x) {grepl("^[가-힣]+$", x) && nchar(x) >= 2}, words)  # 한글로만 구성된 단어 추출 및 길이 2 이상 필터링
+  return(nouns)                       └grep에서의 꺽쇠: '시작' 
+}
+
+# 명사 추출
+nouns <- extract_nouns_simple(cleaned_txt)
+
+# 추출된 명사 확인
+print(head(nouns, 10))  # 상위 10개 단어 확인
+
+# 단어 빈도수 계산
+word_freq <- table(nouns)
+word_freq <- as.data.frame(word_freq, stringsAsFactors = FALSE)
+word_freq <- arrange(word_freq, desc(Freq)) # 명사의 빈도수를 내림차순으로 정렬
+
+# 상위 10개 단어 확인
+print(head(word_freq, 10))
+
+# 유효하지 않은 값 확인 및 제거
+# 빈 문자열을 포함하는 행을 제거합니다. 
+word_freq <- word_freq[word_freq$nouns != "", ]
+
+# 단어 빈도수 데이터프레임 확인
+print(head(word_freq, 10))
+
+# 워드클라우드 생성 (하트 모양)
+wordcloud2(data = word_freq, shape = "heart", color = brewer.pal(8, "Dark2"))
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/2b4c8daf-77e2-4db4-b97f-c3678bd328bf/Untitled.png)
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/b77c20e2-8401-42d4-8fa0-36246c336516/Untitled.png)
+
+```r
+# 특정 단어 제외하기
+word_freq <- subset( word_freq, nouns != "너무")
+word_freq <- subset( word_freq, nouns != "빨리")
+.. . 
+```
+
+▪️문제124. 유튜브 댓글 분석을 위해 할매떡볶이로 검색한 모든 댓글을 워드 클라우드로 시각화하시오 ! 
+
+데이터 [여기](https://cafe.daum.net/oracleoracle/Soei/42) 
+
+```r
+# 작업 디렉토리 설정
+setwd("c:\\data")  # 파일이 있는 디렉토리로 변경
+
+# 텍스트 데이터 로드
+txt <- readLines('할매떡볶이.txt', encoding = "UTF-8")
+txt
+
+# 특수문자 제거 및 공백 처리
+# 불필요한 텍스트를 제거합니다. |n요런거. 
+cleaned_txt <- iconv(txt, "UTF-8", "UTF-8", sub="")
+
+# 한글과 숫자, 공백을 제외한 모든 특수문자를 공백으로 대체합니다. 
+cleaned_txt <- gsub("[^[:alnum:][:space:]ㄱ-ㅎㅏ-ㅣ가-힣]", " ", cleaned_txt)
+
+# 연속된 공백을 하나의 공백으로 변환합니다. 
+cleaned_txt <- gsub("\\s+", " ", cleaned_txt)  # 연속된 공백 제거
+
+# 명사 추출 함수 ( 선생님이 만들어주신 함수. KoNLP에 의존하지 않아도 GPT와 함께라면. ) 
+extract_nouns_simple <- function(doc) {
+  doc <- as.character(doc) # 문자로 변환
+  words <- unlist(strsplit(doc, "\\s+"))  # 공백을 기준으로 단어 분리
+  nouns <- Filter(function(x) {grepl("^[가-힣]+$", x) && nchar(x) >= 2}, words)  # 한글로만 구성된 단어 추출 및 길이 2 이상 필터링
+  return(nouns)                    
+}
+
+# 명사 추출
+nouns <- extract_nouns_simple(cleaned_txt)
+
+# 추출된 명사 확인
+print(head(nouns, 10))  # 상위 10개 단어 확인
+
+# 단어 빈도수 계산
+word_freq <- table(nouns)
+word_freq <- as.data.frame(word_freq, stringsAsFactors = FALSE)
+word_freq <- arrange(word_freq, desc(Freq)) # 명사의 빈도수를 내림차순으로 정렬
+
+# 상위 10개 단어 확인
+print(head(word_freq, 10))
+
+# 유효하지 않은 값 확인 및 제거
+# 빈 문자열을 포함하는 행을 제거합니다. 
+word_freq <- word_freq[word_freq$nouns != "", ]
+word_freq <- subset( word_freq, nouns != "떡볶이")
+
+# 단어 빈도수 데이터프레임 확인
+print(head(word_freq, 10))
+
+# 워드클라우드 생성 (하트 모양)
+wordcloud2(data = word_freq, shape = "heart", color = brewer.pal(8, "Dark2"))
+```
+
+![가까이 대면 건수도 나옴 ](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/a43c29b0-d24e-4d5d-8450-d8ea77966992/Untitled.png)
+
+가까이 대면 건수도 나옴 
+
+*기본 제공 모양
+
+circle: 원형 (기본값)
+cardioid: 심장 모양
+diamond: 다이아몬드 모양
+triangle-forward: 정삼각형 (앞쪽)
+triangle: 정삼각형 (뒤쪽)
+pentagon: 오각형
+star: 별 모양
+
+### 📍문법5. 영문 데이터를 wordcloud2 패키지로 워드클라우드 그래프를 그리시오
+
+```r
+install.packages("wordcloud2")
+install.packages("tm")           # 텍스트 데이터 전처리 전문 패키지
+install.packages("RColorBrewer") 
+install.packages("plyr")         # 데이터 조작을 위한 패키지
+install.packages("data.table")   
+
+# 라이브러리 로드
+library(wordcloud2)
+library(tm)
+library(RColorBrewer)
+library(plyr)
+library(data.table)
+
+# 텍스트 데이터 로드
+file_path <- "winter.txt"
+txt <- readLines(file_path, encoding = "UTF-8")
+
+# 특수문자 제거 및 공백 처리
+# 불필요한 텍스트 제거
+cleaned_txt <- iconv(txt, "UTF-8", "UTF-8", sub="")
+# 특수문자 제거 
+cleaned_txt <- gsub("[^[:alnum:][:space:]]", " ", cleaned_txt)
+# 연속된 공백문자를 하나의 공백으로 
+cleaned_txt <- gsub("\\s+", " ", cleaned_txt)  
+
+# 텍스트를 Corpus로 변환 ( 텍스트 마이닝 패키지의 corpus 객체로 변환 )
+corpus <- Corpus(VectorSource(cleaned_txt))
+
+# 데이터 전처리
+corpus <- tm_map(corpus, content_transformer(tolower))  # 소문자로 변환
+corpus <- tm_map(corpus, removePunctuation)  # 구두점 제거(.,?!...)
+corpus <- tm_map(corpus, removeNumbers)  # 숫자 제거
+corpus <- tm_map(corpus, removeWords, stopwords("en")) # 영어 불용어 제거(am, i, a, the..)
+corpus <- tm_map(corpus, stripWhitespace)  # 여백 제거
+
+# 단어 행렬 생성
+dtm <- TermDocumentMatrix(corpus)
+m <- as.matrix(dtm)
+word_freqs <- sort(rowSums(m), decreasing = TRUE) #단어의 빈도수가 높은 순으로 정렬
+word_freq_df <- data.frame(word = names(word_freqs), freq = word_freqs)
+
+# 워드 클라우드 생성 (하트 모양)
+wordcloud2(data = word_freq_df, shape = "heart", color = brewer.pal(8, "Dark2"))
+```
+
+![안나랑 크리스토프가 너무 나댄다.](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/7c15d2e9-70fa-46d0-a67d-c9b6579e7098/Untitled.png)
+
+안나랑 크리스토프가 너무 나댄다.
+
+▪️문제125. 위의 워드 클라우드에서 anna는 제외시키시오 ! 
+
+```r
+corpus <- tm_map(corpus, removeWords, c(stopwords("en"),"anna","kristoff","contd") )
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/816912ce-0050-4d8f-9f69-4ab28b14b0d1/Untitled.png)
+
+▪️문제126. 앞으로 워드 클라우드를 쉽게 그릴 수 있도록 시각화 자동화 코드에 추가하기 위해 레이디 버그 게시글을 워드 클라우드로 그리는 코드를 wordcloud.R로 저장하시오 ! 
+
+```r
+# 배운 사람들이 쓰는 세련된 워드클라우드 
+install.packages("wordcloud2")
+
+# 라이브러리 로드
+library(wordcloud2)
+library(RColorBrewer)
+library(plyr)
+library(data.table)
+
+# 작업 디렉토리 설정
+setwd("c:\\data")  # 파일이 있는 디렉토리로 변경
+
+# 텍스트 데이터 로드
+txt <- readLines('ladybug5.txt', encoding = "UTF-8")
+
+# 특수문자 제거 및 공백 처리
+# 불필요한 텍스트를 제거합니다. |n요런거. 
+cleaned_txt <- iconv(txt, "UTF-8", "UTF-8", sub="")
+
+# 한글과 숫자, 공백을 제외한 모든 특수문자를 공백으로 대체합니다. 
+cleaned_txt <- gsub("[^[:alnum:][:space:]ㄱ-ㅎㅏ-ㅣ가-힣]", " ", cleaned_txt)
+
+# 연속된 공백을 하나의 공백으로 변환합니다. 
+cleaned_txt <- gsub("\\s+", " ", cleaned_txt)  # 연속된 공백 제거
+
+# 명사 추출 함수 ( 선생님이 만들어주신 함수. KoNLP에 의존하지 않아도 GPT와 함께라면. ) 
+extract_nouns_simple <- function(doc) {
+  doc <- as.character(doc) # 문자로 변환
+  words <- unlist(strsplit(doc, "\\s+"))  # 공백을 기준으로 단어 분리
+  nouns <- Filter(function(x) {grepl("^[가-힣]+$", x) && nchar(x) >= 2}, words)  # 한글로만 구성된 단어 추출 및 길이 2 이상 필터링
+  return(nouns)                       └grep에서의 꺽쇠: '시작' 
+}
+
+# 명사 추출
+nouns <- extract_nouns_simple(cleaned_txt)
+
+# 추출된 명사 확인
+print(head(nouns, 10))  # 상위 10개 단어 확인
+
+# 단어 빈도수 계산
+word_freq <- table(nouns)
+word_freq <- as.data.frame(word_freq, stringsAsFactors = FALSE)
+word_freq <- arrange(word_freq, desc(Freq)) # 명사의 빈도수를 내림차순으로 정렬
+
+# 상위 10개 단어 확인
+print(head(word_freq, 10))
+
+# 유효하지 않은 값 확인 및 제거
+# 빈 문자열을 포함하는 행을 제거합니다. 
+word_freq <- word_freq[word_freq$nouns != "", ]
+
+# 단어 빈도수 데이터프레임 확인
+print(head(word_freq, 10))
+
+# 워드클라우드 생성 (하트 모양)
+wordcloud2(data = word_freq, shape = "heart", color = brewer.pal(8, "Dark2"))
+```
+
+▪️문제127. 자동화 스크립트 ann.R의 7번에 wordcloud 그래프를 추가하시오 ! 
+
+```r
+clear.
+```
+
+▪️문제128. 구글 결제 계정을 만드시오 !  [참고](https://cafe.daum.net/oracleoracle/Soei/34)
+
+```r
+**Google Maps Platform** 
+AIzaSyDerdchu9tK5etQ03pX4xdTNnr33XwuhG0
+```
+
+▪️[오늘의 문제] 
+
+오늘 배운 히스토그램, 박스 그래프, 워드 클라우드 등을 이용해서 SQL 포트폴리오 또는 다른 시각화 하고 싶은 데이터를 골라서 시각화 하시오 !
+
+Q. 평균 물건금액이 가장 높은 3개 자치구와 가장 낮은 3개 자치구의 물건금액을, 박스 그래프로 시각화해보자
+
+```r
+# plotly 이용 
+gu1<- house[house$자치구명=='강남구', c('물건금액')]
+gu2<- house[house$자치구명=='용산구', c('물건금액')]
+gu3<- house[house$자치구명=='서초구', c('물건금액')]
+gu4<- house[house$자치구명=='강북구', c('물건금액')]
+gu5<- house[house$자치구명=='도봉구', c('물건금액')]
+gu6<- house[house$자치구명=='금천구', c('물건금액')]
+
+# x1 데이터의 박스 플롯 생성
+fig1 <- plot_ly(y = ~gu1, type = "box", name = "강남구")
+
+# x2 데이터의 박스 플롯 생성
+fig2 <- plot_ly(y = ~gu2, type = "box", name = "용산구")
+
+# x2 데이터의 박스 플롯 생성
+fig3 <- plot_ly(y = ~gu2, type = "box", name = "서초구")
+
+# x3 데이터의 박스 플롯 생성
+fig4 <- plot_ly(y = ~gu3, type = "box", name = "강북구")
+
+# x3 데이터의 박스 플롯 생성
+fig5 <- plot_ly(y = ~gu3, type = "box", name = "도봉구")
+
+# x2 데이터의 박스 플롯 생성
+fig6 <- plot_ly(y = ~gu2, type = "box", name = "금천천구")
+
+# 서브플롯으로 합치기
+fig <- subplot(fig1, fig2, fig3, fig4, fig5, fig6, nrows = 1, titleX = TRUE, titleY = TRUE)
+
+# 레이아웃 업데이트
+fig <- fig %>% layout(title = "자치구별 물건금액")
+
+# 그래프 표시
+fig
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/614f29a6-8582-4d6e-89f6-eb0364e9a6e4/Untitled.png)
+
+한 축으로 통일해서 볼 수 있게 만들어보자.
+
+```r
+boxplot 사용 
+boxplot(gu1, gu2, gu3, gu4, gu5, gu6, names=c("강남구", "용산구", "서초구", "강북구", "도봉구", "금천구"), 
+        main="상위3구, 하위3구 물건금액", col=c('skyblue','yellowgreen','#FDB29D','gold','orchid','#FC758D'), ylab="자치구명", 
+        xlab='물건금액(단위:만 원)', horizontal = TRUE)
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/c5ad6439-8929-41b8-b781-40c5d75b76ef/Untitled.png)
+
+![1500000이상 이상치 빼고 다시 뽑은 그래프](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/8a58cc61-1709-4e8d-b9e8-e64578cc7b9a/Untitled.png)
+
+1500000이상 이상치 빼고 다시 뽑은 그래프
+
+바이올린 은 왜 안 되지. . .
+
+```r
+
+```
+
+### ✅ 감정분석 데이터 분석
+
+1. 워드 클라우드 시각화 
+2. 표형태 긍정, 부정 단어의 순위를 나열 하는 시각화 
+- 관련된 대표적인 사이트 : 썸트렌드 사이트
+- 나의 데이터 분석을 위한 더 정교한 시각화를 하고 싶다면 R과 파이썬 코드 구현
+
+<aside>
+📌 지혜로운 사람들은 맨땅에서 만드는게 아니라 잘 된 사람거, 잘 해주는 거 보고 내 걸로 벤치마킹. 
+잘 따라하고, 하다보면 더 좋은게 생긴다!
+
+</aside>
+
+▪️문제129. 조 바이든 연설문을 워드 클라우드로 시각화 하시오 ! 
+
+```r
+# 패키지 설치 및 라이브러리 로드
+install.packages("wordcloud2")
+install.packages("tm")  # 문자를 정제하고 전처리하기 위해 필요
+install.packages("RColorBrewer") 
+install.packages("htmlwidgets") # html 위젯을 생성하기 위해 필요 
+install.packages("webshot")  # html 파일을 png그림파일로 저장하기 위해 필요
+install.packages("magick")   # 이미지 파일을 읽고 변환하기 위한 패키지 
+install.packages("ggplot2")  
+install.packages("grid")     # 두 개의 그래프를 하나의 화면에 출력하기 위해 필요
+
+library(wordcloud2)
+library(tm)
+library(RColorBrewer)
+library(htmlwidgets)
+library(webshot)
+library(magick)
+library(ggplot2)
+library(grid)
+
+# PhantomJS 설치
+webshot::install_phantomjs() # webshot 패키지를 위해 필요한 패키지 
+
+# 텍스트 데이터 로드
+biden_file_path <- "joe.txt"
+biden_txt <- readLines(biden_file_path, encoding = "UTF-8")
+
+# 특수문자 제거 및 공백 처리
+cleaned_txt <- iconv(biden_txt, "UTF-8", "UTF-8", sub="")
+cleaned_txt <- gsub("[^[:alnum:][:space:]]", " ", cleaned_txt) #문자나 숫자 아닌 것 제거 
+cleaned_txt <- gsub("\\s+", " ", cleaned_txt) # 두 번이상의 공백문자 제거 
+
+# 텍스트를 Corpus로 변환
+corpus <- VCorpus(VectorSource(cleaned_txt))
+
+# 데이터 전처리
+corpus <- tm_map(corpus, content_transformer(tolower)) # 소문자 변환
+corpus <- tm_map(corpus, removePunctuation)            # 구두점 제거    
+corpus <- tm_map(corpus, removeNumbers)                # 숫자 제거 
+corpus <- tm_map(corpus, removeWords, stopwords("en")) # 불용어 제거 
+corpus <- tm_map(corpus, stripWhitespace)              # 공백만 있는 행 제거 
+
+# 단어 행렬 생성
+dtm <- TermDocumentMatrix(corpus)  # 단어 행렬 만들기 
+m <- as.matrix(dtm)                # 행렬형태로 변환
+word_freqs <- sort(rowSums(m), decreasing = TRUE)  # 빈도수 높은 단어로 정렬
+word_freq_df <- data.frame(word = names(word_freqs), freq = word_freqs)
+word_freq_Df
+
+# 상위 100개의 단어만 선택
+word_freq_df <- head(word_freq_df, 100)
+
+# 워드 클라우드 생성
+word_cloud <- wordcloud2(data = word_freq_df, shape = "circle", color = brewer.pal(8, "Dark2"))
+
+# htmlwidgets로 워드 클라우드를 저장
+saveWidget(word_cloud, "biden_cloud.html", selfcontained = TRUE)
+
+# 워드 클라우드를 이미지로 저장
+webshot("biden_cloud.html", file = "biden_cloud.png", delay = 10)
+
+# magick으로 이미지 불러오기
+biden_img <- image_read("biden_cloud.png")
+
+# ggplot으로 이미지 변환
+biden_plot <- ggplot() + 
+  annotation_custom(rasterGrob(biden_img, width=unit(1,"npc"), height=unit(1,"npc"))) + 
+  theme_void()
+
+# 플롯 출력
+print(biden_plot)
+
+c드라이브-data 밑에서 png 확인 가능 
+```
+
+![word_freq_df의 형태](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/5cf86864-e2b7-4054-9fd3-fa03b7bf492e/Untitled.png)
+
+word_freq_df의 형태
+
+▪️문제130. 트럼프 연설문을 워드 클라우드로 시각화 하시오 ! 
+
+- 코드
+    
+    ```r
+    # 패키지 설치 및 라이브러리 로드
+    install.packages("wordcloud2")
+    install.packages("tm")  # 문자를 정제하고 전처리하기 위해 필요
+    install.packages("RColorBrewer") 
+    install.packages("htmlwidgets") # html 위젯을 생성하기 위해 필요 
+    install.packages("webshot")  # html 파일을 png그림파일로 저장하기 위해 필요
+    install.packages("magick")   # 이미지 파일을 읽고 변환하기 위한 패키지 
+    install.packages("ggplot2")  
+    install.packages("grid")     # 두 개의 그래프를 하나의 화면에 출력하기 위해 필요
+    
+    library(wordcloud2)
+    library(tm)
+    library(RColorBrewer)
+    library(htmlwidgets)
+    library(webshot)
+    library(magick)
+    library(ggplot2)
+    library(grid)
+    
+    # PhantomJS 설치
+    webshot::install_phantomjs() # webshot 패키지를 위해 필요한 패키지 
+    
+    # 텍스트 데이터 로드
+    biden_file_path <- "joe.txt"
+    biden_txt <- readLines(biden_file_path, encoding = "UTF-8")
+    
+    # 특수문자 제거 및 공백 처리
+    cleaned_txt <- iconv(biden_txt, "UTF-8", "UTF-8", sub="")
+    cleaned_txt <- gsub("[^[:alnum:][:space:]]", " ", cleaned_txt) #문자나 숫자 아닌 것 제거 
+    cleaned_txt <- gsub("\\s+", " ", cleaned_txt) # 두 번이상의 공백문자 제거 
+    
+    # 텍스트를 Corpus로 변환
+    corpus <- VCorpus(VectorSource(cleaned_txt))
+    
+    # 데이터 전처리
+    corpus <- tm_map(corpus, content_transformer(tolower)) # 소문자 변환
+    corpus <- tm_map(corpus, removePunctuation)            # 구두점 제거    
+    corpus <- tm_map(corpus, removeNumbers)                # 숫자 제거 
+    corpus <- tm_map(corpus, removeWords, stopwords("en")) # 불용어 제거 
+    corpus <- tm_map(corpus, stripWhitespace)              # 공백만 있는 행 제거 
+    
+    # 단어 행렬 생성
+    dtm <- TermDocumentMatrix(corpus)  # 단어 행렬 만들기 
+    m <- as.matrix(dtm)                # 행렬형태로 변환
+    word_freqs <- sort(rowSums(m), decreasing = TRUE)  # 빈도수 높은 단어로 정렬
+    word_freq_df <- data.frame(word = names(word_freqs), freq = word_freqs)
+    word_freq_Df
+    
+    # 상위 100개의 단어만 선택
+    word_freq_df <- head(word_freq_df, 100)
+    
+    # 워드 클라우드 생성
+    word_cloud <- wordcloud2(data = word_freq_df, shape = "circle", color = brewer.pal(8, "Dark2"))
+    
+    # htmlwidgets로 워드 클라우드를 저장  # 저장해놓고 이미지 뿌려주는게 더 잘 나옴
+    saveWidget(word_cloud, "biden_cloud.html", selfcontained = TRUE)
+    
+    # 워드 클라우드를 이미지로 저장
+    webshot("biden_cloud.html", file = "biden_cloud.png", delay = 10)
+    
+    # magick으로 이미지 불러오기
+    biden_img <- image_read("biden_cloud.png")
+    
+    # ggplot으로 이미지 변환
+    biden_plot <- ggplot() + 
+      annotation_custom(rasterGrob(biden_img, width=unit(1,"npc"), height=unit(1,"npc"))) + 
+      theme_void()
+    
+    # 플롯 출력
+    print(biden_plot)
+    
+    c드라이브-data 밑에서 png 확인 가능 
+    ```
+    
+
+[trump_cloud.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/88ce66c8-2e03-4e6b-8aa9-bc3d6e85ff1d/trump_cloud.png)
+
+▪️문제131. 조바이든 연설문에는 긍정 단어가 얼마나 나오는지 워드 클라우드로 시각화하시오 
+
+- [데이터](https://cafe.daum.net/oracleoracle/Soei/45): 영문 긍정단어, 영문 부정단어
+- 코드
+    
+    ```r
+    # 패키지 설치 및 라이브러리 로드
+    install.packages("wordcloud2")
+    install.packages("tm")
+    install.packages("RColorBrewer")
+    install.packages("htmlwidgets")
+    install.packages("webshot")
+    install.packages("magick")
+    install.packages("ggplot2")
+    install.packages("grid")
+    
+    library(wordcloud2)
+    library(tm)
+    library(RColorBrewer)
+    library(htmlwidgets)
+    library(webshot)
+    library(magick)
+    library(ggplot2)
+    library(grid)
+    
+    # PhantomJS 설치
+    webshot::install_phantomjs()
+    
+    # 텍스트 데이터 로드
+    setwd('c:\\data')
+    biden_file_path <- "joe.txt"
+    **positive_words_file <- "positive-words.txt"** 
+    
+    biden_txt <- readLines(biden_file_path, encoding = "UTF-8")
+    **# 긍정단어 불러오기**
+    **positive_words <- readLines(positive_words_file, encoding = "UTF-8")**
+    
+    # 특수문자 제거 및 공백 처리
+    cleaned_txt <- iconv(biden_txt, "UTF-8", "UTF-8", sub="")
+    cleaned_txt <- gsub("[^[:alnum:][:space:]]", " ", cleaned_txt)
+    cleaned_txt <- gsub("\\s+", " ", cleaned_txt)
+    
+    # 텍스트를 Corpus로 변환
+    corpus <- VCorpus(VectorSource(cleaned_txt))
+    
+    # 데이터 전처리
+    corpus <- tm_map(corpus, content_transformer(tolower))
+    corpus <- tm_map(corpus, removePunctuation)
+    corpus <- tm_map(corpus, removeNumbers)
+    corpus <- tm_map(corpus, removeWords, stopwords("en"))
+    corpus <- tm_map(corpus, stripWhitespace)
+    
+    # 단어 행렬 생성
+    dtm <- TermDocumentMatrix(corpus)
+    m <- as.matrix(dtm)
+    word_freqs <- sort(rowSums(m), decreasing = TRUE)
+    word_freq_df <- data.frame(word = names(word_freqs), freq = word_freqs)
+    
+    **# 긍정 단어 필터링
+    positive_word_freq_df <- word_freq_df[word_freq_df$word %in% positive_words, ]**
+    
+    # 상위 100개의 단어만 선택
+    positive_word_freq_df <- head(positive_word_freq_df, 100)
+    
+    # 워드 클라우드 생성
+    positive_cloud <- wordcloud2(data = positive_word_freq_df, shape = "circle", color = brewer.pal(8, "Dark2"))
+    
+    # htmlwidgets로 워드 클라우드를 저장
+    saveWidget(positive_cloud, "positive_cloud.html", selfcontained = TRUE)
+    
+    # 워드 클라우드를 이미지로 저장
+    webshot("positive_cloud.html", file = "positive_cloud.png", delay = 10)
+    
+    # magick으로 이미지 불러오기
+    positive_img <- image_read("positive_cloud.png")
+    
+    # ggplot으로 이미지 변환
+    positive_plot <- ggplot() + 
+      annotation_custom(rasterGrob(positive_img, width=unit(1,"npc"), height=unit(1,"npc"))) + 
+      theme_void()
+    
+    # 플롯 출력
+    print(positive_plot)
+    ```
+    
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/737b265a-5455-4810-b763-8ff9a2620a1d/Untitled.png)
+
+▪️문제132. 트럼프 연설문의 긍정단어로 워드 클라우드를 그리시오! 
+
+- 코드
+    
+    ```r
+    # 패키지 설치 및 라이브러리 로드
+    install.packages("wordcloud2")
+    install.packages("tm")
+    install.packages("RColorBrewer")
+    install.packages("htmlwidgets")
+    install.packages("webshot")
+    install.packages("magick")
+    install.packages("ggplot2")
+    install.packages("grid")
+    
+    library(wordcloud2)
+    library(tm)
+    library(RColorBrewer)
+    library(htmlwidgets)
+    library(webshot)
+    library(magick)
+    library(ggplot2)
+    library(grid)
+    
+    # PhantomJS 설치
+    webshot::install_phantomjs()
+    
+    # 텍스트 데이터 로드
+    setwd('c:\\data')
+    trump_file_path <- "trump.txt"
+    positive_words_file <- "positive-words.txt" 
+    
+    trump_txt <- readLines(trump_file_path, encoding = "UTF-8")
+    # 긍정단어 불러오기
+    positive_words <- readLines(positive_words_file, encoding = "UTF-8")
+    
+    # 특수문자 제거 및 공백 처리
+    cleaned_txt <- iconv(trump_txt, "UTF-8", "UTF-8", sub="")
+    cleaned_txt <- gsub("[^[:alnum:][:space:]]", " ", cleaned_txt)
+    cleaned_txt <- gsub("\\s+", " ", cleaned_txt)
+    
+    # 텍스트를 Corpus로 변환
+    corpus <- VCorpus(VectorSource(cleaned_txt))
+    
+    # 데이터 전처리
+    corpus <- tm_map(corpus, content_transformer(tolower))
+    corpus <- tm_map(corpus, removePunctuation)
+    corpus <- tm_map(corpus, removeNumbers)
+    corpus <- tm_map(corpus, removeWords, stopwords("en"))
+    corpus <- tm_map(corpus, stripWhitespace)
+    
+    # 단어 행렬 생성
+    dtm <- TermDocumentMatrix(corpus)
+    m <- as.matrix(dtm)
+    word_freqs <- sort(rowSums(m), decreasing = TRUE)
+    word_freq_df <- data.frame(word = names(word_freqs), freq = word_freqs)
+    
+    # 긍정 단어 필터링
+    positive_word_freq_df <- word_freq_df[word_freq_df$word %in% positive_words, ]
+    
+    # 상위 100개의 단어만 선택
+    positive_word_freq_df <- head(positive_word_freq_df, 100)
+    
+    # 워드 클라우드 생성
+    positive_cloud <- wordcloud2(data = positive_word_freq_df, shape = "circle", color = brewer.pal(8, "Dark2"))
+    
+    # htmlwidgets로 워드 클라우드를 저장
+    saveWidget(positive_cloud, "positive_cloud.html", selfcontained = TRUE)
+    
+    # 워드 클라우드를 이미지로 저장
+    webshot("positive_cloud.html", file = "positive_cloud.png", delay = 10)
+    
+    # magick으로 이미지 불러오기
+    positive_img <- image_read("positive_cloud.png")
+    
+    # ggplot으로 이미지 변환
+    positive_plot <- ggplot() + 
+      annotation_custom(rasterGrob(positive_img, width=unit(1,"npc"), height=unit(1,"npc"))) + 
+      theme_void()
+    
+    # 플롯 출력
+    print(positive_plot)
+    ```
+    
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/e81d56b8-3a04-4c3d-8c59-e5f053d11e17/Untitled.png)
+
+▪️문제133. 트럼프 연설문에서 긍정단어와 부정단어를 워드 클라우드로 그리는데 하나의 화면에 바로 같이 출력 되게 하시오 ! 
+
+- 코드
+    
+    ```r
+    # 패키지 설치 및 라이브러리 로드
+    install.packages("wordcloud2")
+    install.packages("tm")
+    install.packages("RColorBrewer")
+    install.packages("plyr")
+    install.packages("data.table")
+    **install.packages("patchwork") # ggplot 객체를 하나의 화면에 배치하기 위해 필요**
+    install.packages("htmlwidgets")
+    install.packages("webshot")
+    install.packages("magick")
+    install.packages("ggplot2")
+    install.packages("grid")
+    
+    library(wordcloud2)
+    library(tm)
+    library(RColorBrewer)
+    library(plyr)
+    library(data.table)
+    library(patchwork)
+    library(htmlwidgets)
+    library(webshot)
+    library(magick)
+    library(ggplot2)
+    library(grid)
+    
+    # PhantomJS 설치
+    webshot::install_phantomjs()
+    
+    # 텍스트 데이터 로드
+    **biden_file_path <- "trump.txt"**
+    positive_words_file <- "positive-words.txt"
+    negative_words_file <- "negative-words.txt"
+    
+    biden_txt <- readLines(biden_file_path, encoding = "UTF-8")
+    positive_words <- readLines(positive_words_file, encoding = "UTF-8")
+    negative_words <- readLines(negative_words_file, encoding = "UTF-8")
+    
+    # 특수문자 제거 및 공백 처리
+    cleaned_txt <- iconv(biden_txt, "UTF-8", "UTF-8", sub="")
+    cleaned_txt <- gsub("[^[:alnum:][:space:]]", " ", cleaned_txt)
+    cleaned_txt <- gsub("\\s+", " ", cleaned_txt)
+    
+    # 텍스트를 Corpus로 변환
+    corpus <- VCorpus(VectorSource(cleaned_txt))
+    
+    # 데이터 전처리
+    corpus <- tm_map(corpus, content_transformer(tolower))
+    corpus <- tm_map(corpus, removePunctuation)
+    corpus <- tm_map(corpus, removeNumbers)
+    corpus <- tm_map(corpus, removeWords, stopwords("en"))
+    corpus <- tm_map(corpus, stripWhitespace)
+    
+    # 단어 행렬 생성
+    dtm <- TermDocumentMatrix(corpus)
+    m <- as.matrix(dtm)
+    word_freqs <- sort(rowSums(m), decreasing = TRUE)
+    word_freq_df <- data.frame(word = names(word_freqs), freq = word_freqs)
+    
+    # 긍정 단어 및 부정 단어 필터링
+    positive_word_freq_df <- word_freq_df[word_freq_df$word %in% positive_words, ]
+    negative_word_freq_df <- word_freq_df[word_freq_df$word %in% negative_words, ]
+    
+    # 상위 100개의 단어만 선택
+    positive_word_freq_df <- head(positive_word_freq_df, 100)
+    negative_word_freq_df <- head(negative_word_freq_df, 100)
+    
+    # 워드 클라우드 생성
+    positive_cloud <- wordcloud2(data = positive_word_freq_df, shape = "circle", color = brewer.pal(8, "Dark2"))
+    negative_cloud <- wordcloud2(data = negative_word_freq_df, shape = "circle", color = brewer.pal(8, "Reds"))
+    
+    # htmlwidgets로 각각의 워드 클라우드를 저장
+    saveWidget(positive_cloud, "positive_cloud.html", selfcontained = TRUE)
+    saveWidget(negative_cloud, "negative_cloud.html", selfcontained = TRUE)
+    
+    # 두 개의 htmlwidgets을 한 화면에 표시
+    webshot("positive_cloud.html", file = "positive_cloud.png", delay = 10)
+    webshot("negative_cloud.html", file = "negative_cloud.png", delay = 10)
+    
+    # magick으로 이미지 불러오기
+    positive_img <- image_read("positive_cloud.png")
+    negative_img <- image_read("negative_cloud.png")
+    
+    # ggplot으로 이미지 변환
+    positive_plot <- ggplot() + 
+      annotation_custom(rasterGrob(positive_img, width=unit(1,"npc"), height=unit(1,"npc"))) + 
+      theme_void()
+    
+    negative_plot <- ggplot() + 
+      annotation_custom(rasterGrob(negative_img, width=unit(1,"npc"), height=unit(1,"npc"))) + 
+      theme_void()
+    
+    # patchwork로 두 이미지를 하나의 화면에 표시
+    combined_plot <- positive_plot + negative_plot
+    
+    # 플롯 출력
+    print(combined_plot)
+    
+    ```
+    
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/802ae315-3b43-4a38-b95f-258126fe0f42/Untitled.png)
+
+▪️문제134. 조바이든 연설문의 긍정과 부정 단어를 워드 클라우드로 그리는데 하나의 화면에 바로 같이 출력 되게 하시오 ! 
+
+- 코드
+    
+    ```r
+    # 패키지 설치 및 라이브러리 로드
+    install.packages("wordcloud2")
+    install.packages("tm")
+    install.packages("RColorBrewer")
+    install.packages("plyr")
+    install.packages("data.table")
+    **install.packages("patchwork") # ggplot 객체를 하나의 화면에 배치하기 위해 필요**
+    install.packages("htmlwidgets")
+    install.packages("webshot")
+    install.packages("magick")
+    install.packages("ggplot2")
+    install.packages("grid")
+    
+    library(wordcloud2)
+    library(tm)
+    library(RColorBrewer)
+    library(plyr)
+    library(data.table)
+    library(patchwork)
+    library(htmlwidgets)
+    library(webshot)
+    library(magick)
+    library(ggplot2)
+    library(grid)
+    
+    # PhantomJS 설치
+    webshot::install_phantomjs()
+    
+    # 텍스트 데이터 로드
+    **biden_file_path <- "joe.txt"**
+    positive_words_file <- "positive-words.txt"
+    negative_words_file <- "negative-words.txt"
+    
+    **joe**_txt <- readLines(biden_file_path, encoding = "UTF-8")
+    positive_words <- readLines(positive_words_file, encoding = "UTF-8")
+    negative_words <- readLines(negative_words_file, encoding = "UTF-8")
+    
+    # 특수문자 제거 및 공백 처리
+    cleaned_txt <- iconv(joe_txt, "UTF-8", "UTF-8", sub="")
+    cleaned_txt <- gsub("[^[:alnum:][:space:]]", " ", cleaned_txt)
+    cleaned_txt <- gsub("\\s+", " ", cleaned_txt)
+    
+    # 텍스트를 Corpus로 변환
+    corpus <- VCorpus(VectorSource(cleaned_txt))
+    
+    # 데이터 전처리
+    corpus <- tm_map(corpus, content_transformer(tolower))
+    corpus <- tm_map(corpus, removePunctuation)
+    corpus <- tm_map(corpus, removeNumbers)
+    corpus <- tm_map(corpus, removeWords, stopwords("en"))
+    corpus <- tm_map(corpus, stripWhitespace)
+    
+    # 단어 행렬 생성
+    dtm <- TermDocumentMatrix(corpus)
+    m <- as.matrix(dtm)
+    word_freqs <- sort(rowSums(m), decreasing = TRUE)
+    word_freq_df <- data.frame(word = names(word_freqs), freq = word_freqs)
+    
+    # 긍정 단어 및 부정 단어 필터링
+    positive_word_freq_df <- word_freq_df[word_freq_df$word %in% positive_words, ]
+    negative_word_freq_df <- word_freq_df[word_freq_df$word %in% negative_words, ]
+    
+    # 상위 100개의 단어만 선택
+    positive_word_freq_df <- head(positive_word_freq_df, 100)
+    negative_word_freq_df <- head(negative_word_freq_df, 100)
+    
+    # 워드 클라우드 생성
+    positive_cloud <- wordcloud2(data = positive_word_freq_df, shape = "circle", color = brewer.pal(8, "Dark2"))
+    negative_cloud <- wordcloud2(data = negative_word_freq_df, shape = "circle", color = brewer.pal(8, "Reds"))
+    
+    # htmlwidgets로 각각의 워드 클라우드를 저장
+    saveWidget(positive_cloud, "positive_cloud.html", selfcontained = TRUE)
+    saveWidget(negative_cloud, "negative_cloud.html", selfcontained = TRUE)
+    
+    # 두 개의 htmlwidgets을 한 화면에 표시
+    webshot("positive_cloud.html", file = "positive_cloud.png", delay = 10)
+    webshot("negative_cloud.html", file = "negative_cloud.png", delay = 10)
+    
+    # magick으로 이미지 불러오기
+    positive_img <- image_read("positive_cloud.png")
+    negative_img <- image_read("negative_cloud.png")
+    
+    # ggplot으로 이미지 변환
+    positive_plot <- ggplot() + 
+      annotation_custom(rasterGrob(positive_img, width=unit(1,"npc"), height=unit(1,"npc"))) + 
+      theme_void()
+    
+    negative_plot <- ggplot() + 
+      annotation_custom(rasterGrob(negative_img, width=unit(1,"npc"), height=unit(1,"npc"))) + 
+      theme_void()
+    
+    # patchwork로 두 이미지를 하나의 화면에 표시
+    combined_plot <- positive_plot + negative_plot
+    
+    # 플롯 출력
+    print(combined_plot)
+    
+    ```
+    
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/864c02f5-d936-45cf-a511-161b661687f8/Untitled.png)
+
+**[0704 점심문제]** 
+
+cbs 라디오 그대와 여는 아침 선곡표의 노래 단어들을 워드 클라우드로 확인하세요.
+
+- 코드
+    
+    ```r
+    # 패키지 설치 및 라이브러리 로드
+    install.packages("wordcloud2")
+    install.packages("tm")  # 문자를 정제하고 전처리하기 위해 필요
+    install.packages("RColorBrewer") 
+    install.packages("htmlwidgets") # html 위젯을 생성하기 위해 필요 
+    install.packages("webshot")  # html 파일을 png그림파일로 저장하기 위해 필요
+    install.packages("magick")   # 이미지 파일을 읽고 변환하기 위한 패키지 
+    install.packages("ggplot2")  
+    install.packages("grid")     # 두 개의 그래프를 하나의 화면에 출력하기 위해 필요
+    
+    library(wordcloud2)
+    library(tm)
+    library(RColorBrewer)
+    library(htmlwidgets)
+    library(webshot)
+    library(magick)
+    library(ggplot2)
+    library(grid)
+    
+    # PhantomJS 설치
+    webshot::install_phantomjs() # webshot 패키지를 위해 필요한 패키지 
+    
+    # 텍스트 데이터 로드
+    playlist_file_path <- "playlist.txt"
+    playlist_txt <- readLines(playlist_file_path, encoding = "UTF-8")
+    
+    # 특수문자 제거 및 공백 처리
+    cleaned_txt <- iconv(biden_txt, "UTF-8", "UTF-8", sub="")
+    cleaned_txt <- gsub("[^[:alnum:][:space:]]", " ", cleaned_txt) #문자나 숫자 아닌 것 제거 
+    cleaned_txt <- gsub("\\s+", " ", cleaned_txt) # 두 번이상의 공백문자 제거 
+    
+    # 텍스트를 Corpus로 변환
+    corpus <- VCorpus(VectorSource(cleaned_txt))
+    
+    # 데이터 전처리
+    corpus <- tm_map(corpus, content_transformer(tolower)) # 소문자 변환
+    corpus <- tm_map(corpus, removePunctuation)            # 구두점 제거    
+    corpus <- tm_map(corpus, removeNumbers)                # 숫자 제거 
+    corpus <- tm_map(corpus, removeWords, stopwords("en")) # 불용어 제거 
+    corpus <- tm_map(corpus, stripWhitespace)              # 공백만 있는 행 제거 
+    
+    # 단어 행렬 생성
+    dtm <- TermDocumentMatrix(corpus)  # 단어 행렬 만들기 
+    m <- as.matrix(dtm)                # 행렬형태로 변환
+    word_freqs <- sort(rowSums(m), decreasing = TRUE)  # 빈도수 높은 단어로 정렬
+    word_freq_df <- data.frame(word = names(word_freqs), freq = word_freqs)
+    word_freq_Df
+    
+    # 상위 100개의 단어만 선택
+    word_freq_df <- head(word_freq_df, 100)
+    
+    # 워드 클라우드 생성
+    word_cloud <- wordcloud2(data = word_freq_df, shape = "circle", color = brewer.pal(8, "Dark2"))
+    
+    # htmlwidgets로 워드 클라우드를 저장
+    saveWidget(word_cloud, "biden_cloud.html", selfcontained = TRUE)
+    
+    # 워드 클라우드를 이미지로 저장
+    webshot("biden_cloud.html", file = "biden_cloud.png", delay = 10)
+    
+    # magick으로 이미지 불러오기
+    biden_img <- image_read("biden_cloud.png")
+    
+    # ggplot으로 이미지 변환
+    biden_plot <- ggplot() + 
+      annotation_custom(rasterGrob(biden_img, width=unit(1,"npc"), height=unit(1,"npc"))) + 
+      theme_void()
+    
+    # 플롯 출력
+    print(biden_plot)
+    
+    c드라이브-data 밑에서 png 확인 가능 
+    ```
+    
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/5dd14d4b-37e8-476c-90dc-9de149049875/Untitled.png)
+
+**[0708 점심문제]**
+
+다음과 같이 스티브 잡스 연설문으로 긍정단어와 부정단어를 시각화 하시오 ! → [데이터](https://cafe.daum.net/oracleoracle/Sotv/322)
+
+- 코드
+    
+    ```r
+    library(wordcloud2)
+    library(tm)
+    library(RColorBrewer)
+    library(plyr)
+    library(data.table)
+    library(patchwork)
+    library(htmlwidgets)
+    library(webshot)
+    library(magick)
+    library(ggplot2)
+    library(grid)
+    
+    # PhantomJS 설치
+    webshot::install_phantomjs()
+    
+    # 텍스트 데이터 로드
+    jobs_file_path <- "jobs.txt"
+    positive_words_file <- "positive-words.txt"
+    negative_words_file <- "negative-words.txt"
+    
+    jobs_txt <- readLines(jobs_file_path, encoding = "UTF-8")
+    positive_words <- readLines(positive_words_file, encoding = "UTF-8")
+    negative_words <- readLines(negative_words_file, encoding = "UTF-8")
+    
+    # 특수문자 제거 및 공백 처리
+    cleaned_txt <- iconv(jobs_txt, "UTF-8", "UTF-8", sub="")
+    cleaned_txt <- gsub("[^[:alnum:][:space:]]", " ", cleaned_txt)
+    cleaned_txt <- gsub("\\s+", " ", cleaned_txt)
+    
+    # 텍스트를 Corpus로 변환
+    corpus <- VCorpus(VectorSource(cleaned_txt))
+    
+    # 데이터 전처리
+    corpus <- tm_map(corpus, content_transformer(tolower))
+    corpus <- tm_map(corpus, removePunctuation)
+    corpus <- tm_map(corpus, removeNumbers)
+    corpus <- tm_map(corpus, removeWords, stopwords("en"))
+    corpus <- tm_map(corpus, stripWhitespace)
+    
+    # 단어 행렬 생성
+    dtm <- TermDocumentMatrix(corpus)
+    m <- as.matrix(dtm)
+    word_freqs <- sort(rowSums(m), decreasing = TRUE)
+    word_freq_df <- data.frame(word = names(word_freqs), freq = word_freqs)
+    
+    # 긍정 단어 및 부정 단어 필터링
+    positive_word_freq_df <- word_freq_df[word_freq_df$word %in% positive_words, ]
+    negative_word_freq_df <- word_freq_df[word_freq_df$word %in% negative_words, ]
+    
+    # 상위 100개의 단어만 선택
+    positive_word_freq_df <- head(positive_word_freq_df, 100)
+    negative_word_freq_df <- head(negative_word_freq_df, 100)
+    
+    # 워드 클라우드 생성
+    positive_cloud <- wordcloud2(data = positive_word_freq_df, shape = "circle", color = brewer.pal(8, "Dark2"))
+    negative_cloud <- wordcloud2(data = negative_word_freq_df, shape = "circle", color = brewer.pal(8, "Reds"))
+    
+    # htmlwidgets로 각각의 워드 클라우드를 저장
+    saveWidget(positive_cloud, "positive_cloud.html", selfcontained = TRUE)
+    saveWidget(negative_cloud, "negative_cloud.html", selfcontained = TRUE)
+    
+    # 두 개의 htmlwidgets을 한 화면에 표시
+    webshot("positive_cloud.html", file = "positive_cloud.png", delay = 10)
+    webshot("negative_cloud.html", file = "negative_cloud.png", delay = 10)
+    
+    # magick으로 이미지 불러오기
+    positive_img <- image_read("positive_cloud.png")
+    negative_img <- image_read("negative_cloud.png")
+    
+    # ggplot으로 이미지 변환
+    positive_plot <- ggplot() + 
+      annotation_custom(rasterGrob(positive_img, width=unit(1,"npc"), height=unit(1,"npc"))) + 
+      theme_void()
+    
+    negative_plot <- ggplot() + 
+      annotation_custom(rasterGrob(negative_img, width=unit(1,"npc"), height=unit(1,"npc"))) + 
+      theme_void()
+    
+    # patchwork로 두 이미지를 하나의 화면에 표시
+    combined_plot <- positive_plot + negative_plot
+    
+    # 플롯 출력
+    print(combined_plot)
+    
+    ```
+    
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/08691aea-b5b9-4275-80cd-5d0d824962f4/f682eceb-33dd-4d18-9228-a828d751c590/Untitled.png)
