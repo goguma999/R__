@@ -4,9 +4,9 @@
 
 주요 그래프를 출력할 수 있는 R 코드를 정리했습니다. (☀️ 2024년 7월 9일 updated)
 
-**1. 막대그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/1.%20%EB%A7%89%EB%8C%80%20%EA%B7%B8%EB%9E%98%ED%94%84.md)
+**1. 막대그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/01.%20%EB%A7%89%EB%8C%80%20%EA%B7%B8%EB%9E%98%ED%94%84.md)
 
-**2. 원형 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/2.%20%EC%9B%90%ED%98%95%20%EA%B7%B8%EB%9E%98%ED%94%84.md)
+**2. 원형 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/02.%20%EC%9B%90%ED%98%95%20%EA%B7%B8%EB%9E%98%ED%94%84.md)
 
 **3. 산포도 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/3.%20%EC%82%B0%ED%8F%AC%EB%8F%84%20%EA%B7%B8%EB%9E%98%ED%94%84.txt)
 
