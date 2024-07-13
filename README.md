@@ -10,7 +10,7 @@
 
 **3. 산포도 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/3.%20%EC%82%B0%ED%8F%AC%EB%8F%84%20%EA%B7%B8%EB%9E%98%ED%94%84.txt)
 
-**4. 라인 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/4.%20%EB%9D%BC%EC%9D%B8%20%EA%B7%B8%EB%9E%98%ED%94%84%20.txt)
+**4. 라인 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/04.%20%EB%9D%BC%EC%9D%B8%20%EA%B7%B8%EB%9E%98%ED%94%84%20.md)
 
 **5. 히스토그램 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/5.%20%ED%9E%88%EC%8A%A4%ED%86%A0%EA%B7%B8%EB%9E%A8%20%EA%B7%B8%EB%9E%98%ED%94%84.txt)
 
