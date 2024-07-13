@@ -14,7 +14,7 @@
 
 **5. 히스토그램 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/05.%20%ED%9E%88%EC%8A%A4%ED%86%A0%EA%B7%B8%EB%9E%A8%20%EA%B7%B8%EB%9E%98%ED%94%84.md)
 
-**6. 박스 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/6.%20%EB%B0%95%EC%8A%A4%20%EA%B7%B8%EB%9E%98%ED%94%84.txt)
+**6. 박스 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/06.%20%EB%B0%95%EC%8A%A4%20%EA%B7%B8%EB%9E%98%ED%94%84.md)
 
 **7. 워드 클라우드 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/7.%20%EC%9B%8C%EB%93%9C%20%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C%20%EA%B7%B8%EB%9E%98%ED%94%84%20.txt)
 
