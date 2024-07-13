@@ -8,7 +8,7 @@
 
 **2. 원형 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/02.%20%EC%9B%90%ED%98%95%20%EA%B7%B8%EB%9E%98%ED%94%84.md)
 
-**3. 산포도 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/3.%20%EC%82%B0%ED%8F%AC%EB%8F%84%20%EA%B7%B8%EB%9E%98%ED%94%84.txt)
+**3. 산포도 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/03.%20%EC%82%B0%ED%8F%AC%EB%8F%84%20%EA%B7%B8%EB%9E%98%ED%94%84.md)
 
 **4. 라인 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/04.%20%EB%9D%BC%EC%9D%B8%20%EA%B7%B8%EB%9E%98%ED%94%84%20.md)
 
