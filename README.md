@@ -16,7 +16,7 @@
 
 **6. 박스 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/06.%20%EB%B0%95%EC%8A%A4%20%EA%B7%B8%EB%9E%98%ED%94%84.md)
 
-**7. 워드 클라우드 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/7.%20%EC%9B%8C%EB%93%9C%20%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C%20%EA%B7%B8%EB%9E%98%ED%94%84%20.txt)
+**7. 워드 클라우드 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/07.%20%EC%9B%8C%EB%93%9C%20%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C%20%EA%B7%B8%EB%9E%98%ED%94%84%20.md)
 
 **8. 지도 그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/8.%20%EC%A7%80%EB%8F%84%20%EA%B7%B8%EB%9E%98%ED%94%84.txt)
 
