@@ -7,7 +7,7 @@
 주요 그래프를 출력할 수 있는 R 코드입니다. (☀️ 2024년 7월 16일 updated)
 
 <img src="image/_0-1.png">
-<img src="https://github.com/goguma999/R__/blob/main/_0-2.png">
+<img src="image/_0-2.png">
 
 
 **1. 막대그래프**: 📄 [노트](https://github.com/goguma999/R__/blob/main/01.%20%EB%A7%89%EB%8C%80%20%EA%B7%B8%EB%9E%98%ED%94%84.md)
