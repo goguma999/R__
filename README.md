@@ -78,10 +78,29 @@ R을 활용한 머신러닝 모델 생성 코드입니다.    *교재:「R을 �
 
 **▪️ 회귀트리와 모델트리**: 📄 [노트](https://www.notion.so/066-309b0ed91c1b407eb16319a5883ecd0c?pvs=4)
 
+**▪️ 로지스틱 회귀**: 📄 [노트](https://www.notion.so/067-dc8d510ed2954b24b7c86afaad9e086b?pvs=4)
 
+**▪️ 서포트 벡터 머신**: 📄 [노트](https://www.notion.so/068-321dd0d1477c420798a847822086d7cc?pvs=25)
 
+**▪️ 신경망**: 📄 [노트](https://www.notion.so/069-e19c348686114f398ae838f578691659)
 
+**▪️ 연관분석**: 📄 [노트](https://www.notion.so/070-35a229f46bdc4c37ab196917ce2a669e?pvs=4)
 
+**▪️ k-means**: 📄 [노트](https://www.notion.so/071-k-means-9882d064a94d4d1aa8b7aad95fba8d5c?pvs=25)
+
+**▪️ 모델 평가**: 📄 [노트](https://www.notion.so/072-70caebb11d4a4512b0e948ffc1f37379?pvs=25)
+
+**▪️ ROC커브와 cut-off**: 📄 [노트](https://www.notion.so/073-ROC-cut-off-53c90561bcc24c788e7269dc75f3ac32?pvs=25)
+
+**▪️ k-foldout**: 📄 [노트](https://www.notion.so/074-k-foldout-8a1b7c5389d94b5da90f5639392bb5f7)
+
+**▪️ 앙상블**: 📄 [노트](https://www.notion.so/075-33416b763b9b4688b0e5adf7d95e8541?pvs=25)
+
+**▪️ 랜덤 포레스트**: 📄 [노트](https://www.notion.so/076-ebdf135d4a63407c9ad737dc25a43852)
+
+**▪️ caret을 이용한 자동 튜닝**: 📄 [노트](https://www.notion.so/077-caret-8d3d0a39108f46e485cc16ed00a481ba?pvs=25)
+
+&nbsp;
 
 
 
