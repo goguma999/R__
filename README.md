@@ -1,6 +1,6 @@
 # R for 데이터 시각화 & 머신러닝
 ## 📌 R 기본문법 & 주요 패키지 
-🔌[코드](https://github.com/goguma999/R__/blob/main/00.%20R%EA%B8%B0%EB%B3%B8%EB%AC%B8%EB%B2%95&%ED%8C%A8%ED%82%A4%EC%A7%80.txt)
+🔌[코드]
 
 ## 📌 데이터 시각화📊 
 
