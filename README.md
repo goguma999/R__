@@ -6,7 +6,7 @@
 
 주요 그래프를 출력할 수 있는 R 코드입니다. (☀️ 2024년 7월 16일 updated)
 
-<img src="https://github.com/goguma999/R__/blob/main/_0-1.png">
+<img src="image/_0-1.png">
 <img src="https://github.com/goguma999/R__/blob/main/_0-2.png">
 
 
